@@ -16,16 +16,10 @@ public class Team extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String name;
 
-    @Column(
-            length = 250,
-            nullable = false
-    )
+    @Column(length = 250, nullable = false)
     private String description;
 
     // 생성자

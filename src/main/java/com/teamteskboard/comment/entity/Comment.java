@@ -18,24 +18,15 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    @ManyToOne(
-            fetch = FetchType.LAZY,
-            optional = false
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_id")
     private Task task_id;
 
-    @ManyToOne(
-            fetch = FetchType.LAZY,
-            optional = false
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user_id;
 
-    @Column(
-            columnDefinition = "text",
-            nullable = false
-    )
+    @Column(columnDefinition = "text", nullable = false)
     private String content;
 
     @Column(nullable = false)

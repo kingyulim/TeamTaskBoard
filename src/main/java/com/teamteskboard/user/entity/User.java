@@ -16,28 +16,16 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String username;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String email;
 
-    @Column(
-            length = 250,
-            nullable = false
-    )
+    @Column(length = 250, nullable = false)
     private String password;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String role;
 
     @Column(nullable = false)

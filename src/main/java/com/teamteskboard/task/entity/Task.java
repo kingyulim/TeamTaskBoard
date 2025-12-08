@@ -26,28 +26,16 @@ public class Task extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User userId;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String title;
 
-    @Column(
-            length = 250,
-            nullable = false
-    )
+    @Column(length = 250, nullable = false)
     private String description;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String status;
 
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     private String priority;
 
     @Column(nullable = false)

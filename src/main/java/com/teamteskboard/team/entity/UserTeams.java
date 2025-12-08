@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "usersteams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UsersTeams {
+public class UserTeams {
     // 속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class UsersTeams {
     private User user_id;
 
     // 생성자
-    public UsersTeams(Task task_id, User user_id) {
+    public UserTeams(Task task_id, User user_id) {
         this.task_id = task_id;
         this.user_id = user_id;
     }

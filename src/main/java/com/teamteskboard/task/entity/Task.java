@@ -23,8 +23,8 @@ public class Task extends BaseTimeEntity {
         fetch = FetchType.LAZY,
         optional = false
     )
-    @JoinColumn(name = "user_id")
-    private User userId;
+    @JoinColumn(name = "assignee_id")
+    private User assigneeId;
 
     @Column(length = 20, nullable = false)
     private String title;
@@ -33,13 +33,10 @@ public class Task extends BaseTimeEntity {
     private String description;
 
     @Column(length = 20, nullable = false)
-    private String status;
+    private String status = "TODO";
 
     @Column(length = 20, nullable = false)
     private String priority;
-
-    @Column(nullable = false)
-    private Long assigneeId;
 
     @Column(nullable = false)
     private LocalDateTime dueDatetime;
@@ -48,12 +45,11 @@ public class Task extends BaseTimeEntity {
     private Boolean isDeleted = false;
 
     // 생성자
-    public Task(User userId, String title, String description, String status, String priority, Long assigneeId, LocalDateTime dueDatetime) {
+    public Task(String title, String description, String status, String priority, User assigneeId, LocalDateTime dueDatetime) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.assigneeId = assigneeId;
-        this.userId = userId;
     }
 }

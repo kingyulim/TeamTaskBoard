@@ -1,4 +1,4 @@
-package com.team_deskboard.common.exception;
+package com.teamteskboard.common.exception;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.teamteskboard.comment.dto.response;
+package com.teamteskboard.common.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

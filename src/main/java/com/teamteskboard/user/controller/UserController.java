@@ -11,10 +11,11 @@ import com.teamteskboard.user.dto.response.PasswordResponse;
 import com.teamteskboard.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-/*import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;*/
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class UserController {
      */
     @PostMapping("/users")
     public ResponseEntity<ApiResponse<CreateUserResponse>> createUser(
-            @RequestBody CreateUserRequest request
+            @Valid @RequestBody CreateUserRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
@@ -42,13 +43,13 @@ public class UserController {
      * @param request 로그인 요청 DTO (아이디, 비밀번호)
      * @return 로그인 응답 DTO (토큰)
      */
-    /*@PostMapping("/api/auth/login")
+    @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
-            @RequestBody LoginRequest request
+           @Valid @RequestBody LoginRequest request
     ) {
         ApiResponse<LoginResponse> result = userService.login(request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
-    }*/
+    }
 
     /**
      * 비밀번호 확인
@@ -56,14 +57,14 @@ public class UserController {
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
-    /*@PostMapping("/api/auth/verify-password")
+    @PostMapping("/api/auth/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
             @AuthenticationPrincipal User user,
-            @RequestBody PasswordRequest request
+            @Valid @RequestBody PasswordRequest request
     ) {
         ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getUsername(), request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
-    }*/
+    }
 
     /**
      * 사용자 정보 조회 요청 검증

@@ -4,12 +4,15 @@ import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
 import com.teamteskboard.team.dto.response.CreatedTeamResponse;
+import com.teamteskboard.team.dto.response.GetAllTeamsResponse;
 import com.teamteskboard.team.dto.response.UpdatedTeamResponse;
 import com.teamteskboard.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    // 팀 생성 API
     @PostMapping("/teams")
     public ResponseEntity<ApiResponse<CreatedTeamResponse>> createTeamApi(
             @RequestBody CreatedTeamRequest request
@@ -27,6 +31,15 @@ public class TeamController {
                 .body(ApiResponse.success("팀이 생성되었습니다.", teamService.createTeam(request)));
     }
 
+    // 팀 목록 전체 조회 API
+    @GetMapping("/teams")
+    public ResponseEntity<ApiResponse<List<GetAllTeamsResponse>>> getTeamsApi() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 목록 조회 성공", teamService.getAllTeams()));
+    }
+
+    // 팀 수정 API
     @PutMapping("/teams/{teamId}")
     public ResponseEntity<ApiResponse<UpdatedTeamResponse>> updateTeamApi(
             @PathVariable Long teamId,

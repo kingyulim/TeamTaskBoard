@@ -1,5 +1,6 @@
 package com.teamteskboard.common.utils;
 
+import com.teamteskboard.common.enums.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
@@ -46,10 +47,11 @@ public class JwtUtil {
      * @param userId 유저 고유 ID
      * @return 생성된 토큰
      */
-    public String generateToken(Long userId) {
+    public String generateToken(Long userId, UserRoleEnum userRole) {
         Date now = new Date();
         return BEARER_PREFIX + Jwts.builder()
-                .claim("userId", userId) // 클레임 추가
+                .claim("userId", userId) // 유저 ID
+                .claim("auth", userRole) // 권한
                 .issuedAt(now) // 토큰 발급 시간
                 .expiration(new Date(now.getTime() + TOKEN_TIME)) // 만료 시간
                 .signWith(key, Jwts.SIG.HS256)
@@ -78,9 +80,13 @@ public class JwtUtil {
         return parser.parseSignedClaims(token).getPayload();
     }
 
-    // 특정 클레임("userId")만 복호화
+    // 유저 Id만 복호화
     public String extractUserId(String token) {
         return extractAllClaims(token).get("userId", String.class);
     }
 
+    // 권한만 복호화
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("auth", String.class);
+    }
 }

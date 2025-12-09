@@ -1,13 +1,16 @@
 package com.teamteskboard.user.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
+import com.teamteskboard.common.enums.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
@@ -17,7 +20,7 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(length = 20, nullable = false)
-    private String username;
+    private String name;
 
     @Column(length = 20, nullable = false)
     private String email;
@@ -26,17 +29,17 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(length = 20, nullable = false)
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
 
     @Column(nullable = false)
     private Boolean disDeleted = false;
 
     // 생성자
-    public User(String username, String email, String password, String role) {
-        this.username = username;
+    public User(String name, String email, String password) {
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
     }
 
     // 기능

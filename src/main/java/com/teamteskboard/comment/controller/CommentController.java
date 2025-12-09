@@ -30,6 +30,19 @@ public class CommentController {
             @RequestBody CreatedCommentRequest request
     ) {
         return ResponseEntity.ok(commentService.save(taskId, userId, request));
+
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<GetCommentResponseDto>>> foundAll() {
+        List<GetCommentResponseDto> responses = commentService.getAll();
+
+        //timestamp 선언
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        ApiResponse apiResponse = new ApiResponse<>(true, "댓글 목록을 조회했었습니다.", responses, timestamp);
+        ResponseEntity<ApiResponse<List<GetCommentResponseDto>>> responseDto = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return responseDto;
     }
 }
 

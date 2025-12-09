@@ -11,6 +11,7 @@ import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
 import com.teamteskboard.user.dto.response.CreateUserResponse;
+import com.teamteskboard.user.dto.response.GetUserResponse;
 import com.teamteskboard.user.dto.response.LoginResponse;
 import com.teamteskboard.user.dto.response.PasswordResponse;
 import com.teamteskboard.user.entity.User;
@@ -45,9 +46,7 @@ public class UserService {
 
         User createdUser = userRepository.save(user);
 
-        return ApiResponse.success(
-                "회원가입이 완료되었습니다.",
-                CreateUserResponse.from(createdUser)
+        return ApiResponse.success("회원가입이 완료되었습니다.", CreateUserResponse.from(createdUser)
         );
     }
 
@@ -87,5 +86,18 @@ public class UserService {
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         return ApiResponse.success("비밀번호가 확인되었습니다.", PasswordResponse.from(valid));
+    }
+
+    /**
+     * 사용자 정보 조회
+     * @param userId 회원 고유 번호
+     * @return ApiResponse<GetUserResponse> json 반환
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<GetUserResponse> getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_MEMBER_ID));
+
+        return ApiResponse.success("사용자 정보 조회 성공", GetUserResponse.from(user));
     }
 }

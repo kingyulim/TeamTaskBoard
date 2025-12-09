@@ -41,7 +41,7 @@ public class UserController {
      * @param request 로그인 요청 DTO (아이디, 비밀번호)
      * @return 로그인 응답 DTO (토큰)
      */
-    @PostMapping("/api/auth/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody LoginRequest request
     ) {
@@ -55,7 +55,7 @@ public class UserController {
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
-    @PostMapping("/api/auth/verify-password")
+    @PostMapping("/auth/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
             @AuthenticationPrincipal User user,
             @RequestBody PasswordRequest request

@@ -6,7 +6,6 @@ import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.common.utils.JwtUtil;
-import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -18,7 +17,6 @@ import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor

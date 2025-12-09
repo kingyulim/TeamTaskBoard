@@ -3,9 +3,9 @@ spring:
     import: optional:file:.env[.properties]
 
   datasource:
-    url:
-    username:
-    password:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -18,4 +18,4 @@ spring:
 
 jwt:
   secret:
-    key: IfthisgetsstolenitsabigproblemIfthelengthistooshortthesecurityisnotsufficientsoanerroroccurs
+    key: ${JWT_KEY}

@@ -45,7 +45,7 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             return ApiResponse.error("이미 사용 중인 이메일입니다.");
         }
-        
+
         // 이메일 형식 체크
         if (!request.getEmail().matches(RegExp.EMAIL)) {
             return ApiResponse.error("올바른 이메일 형식이 아닙니다.");

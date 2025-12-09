@@ -96,7 +96,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public ApiResponse<GetUserResponse> getUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_MEMBER_ID));
+                .orElse(null);
+
+        if (user == null) {
+            return ApiResponse.error("사용자를 찾을 수 없습니다.");
+        }
 
         return ApiResponse.success("사용자 정보 조회 성공", GetUserResponse.from(user));
     }

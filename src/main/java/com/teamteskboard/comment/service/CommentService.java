@@ -9,7 +9,6 @@ import com.teamteskboard.task.entity.Task;
 import com.teamteskboard.task.entity.repository.TaskRepository;
 import com.teamteskboard.user.entity.User;
 import com.teamteskboard.user.entity.repository.UserRepository;
-import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.teamteskboard.common.exception.ExceptionMessageEnum.NOT_FOUND_TASK;
+import static com.teamteskboard.common.exception.ExceptionMessageEnum.*;
 
 @RequiredArgsConstructor
 @Service
@@ -75,5 +74,29 @@ public class CommentService {
             dtos.add(getCommentResponseDto);
         }
         return dtos;
+    }
+
+    //수정
+    public UpdateCommentResponse update(Long userId, Long commentId, UpdateCommentRequest request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_COMMENT));
+
+        //댓글 사용자가 아닌 경우
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(COMMENT_ACCESS_DENIED_EXCEPTION);
+        }
+
+        //수정 메소드 불러오기
+        comment.commentUpdate(request.getContent());
+
+        return new UpdateCommentResponse(
+                comment.getCommentId(),
+                comment.getTask().getId(),
+                comment.getUser().getId(),
+                comment.getContent(),
+                comment.getParentId(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
     }
 }

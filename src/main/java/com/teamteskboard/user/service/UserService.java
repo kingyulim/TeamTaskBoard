@@ -2,11 +2,11 @@ package com.teamteskboard.user.service;
 
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.common.enums.UserRoleEnum;
+import com.teamteskboard.common.regexp.RegExp;
 import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.common.utils.JwtUtil;
-import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -19,7 +19,8 @@ import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,22 @@ public class UserService {
      */
     @Transactional
     public ApiResponse<CreateUserResponse> createUser(CreateUserRequest request) {
+        // userName 중복 체크
+        if (userRepository.existsByUserName(request.getUserName())) {
+            return ApiResponse.error("이미 존재하는 사용자 명입니다.");
+        }
+
+        // 이메일 중복 체크
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+        }
+        
+        // 이메일 형식 체크
+        if (!request.getEmail().matches(RegExp.EMAIL)) {
+            return ApiResponse.error("올바른 이메일 형식이 아닙니다.");
+        }
+
+        // User 생성
         User user = new User(
                 request.getName(),
                 request.getUserName(),
@@ -44,9 +61,12 @@ public class UserService {
 
         user.setRole(UserRoleEnum.USER);
 
+        // 저장
         User createdUser = userRepository.save(user);
 
-        return ApiResponse.success("회원가입이 완료되었습니다.", CreateUserResponse.from(createdUser)
+        return ApiResponse.success(
+                "회원가입이 완료되었습니다.",
+                CreateUserResponse.from(createdUser)
         );
     }
 
@@ -103,5 +123,21 @@ public class UserService {
         }
 
         return ApiResponse.success("사용자 정보 조회 성공", GetUserResponse.from(user));
+    }
+
+    /**
+     * 사용자 목록 조회
+     * @return List<GetUserResponse> 반환
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<List<GetUserResponse>> getUserList() {
+        List<User> user = userRepository.findAll();
+
+        List<GetUserResponse> getUserResponseList = user
+                .stream()
+                .map(u -> GetUserResponse.from(u))
+                .toList();
+
+        return ApiResponse.success("사용자 목록 조회 성공", getUserResponseList);
     }
 }

@@ -8,8 +8,10 @@ import com.teamteskboard.common.utils.JwtUtil;
 import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
+import com.teamteskboard.user.dto.request.PasswordRequest;
 import com.teamteskboard.user.dto.response.CreateUserResponse;
 import com.teamteskboard.user.dto.response.LoginResponse;
+import com.teamteskboard.user.dto.response.PasswordResponse;
 import com.teamteskboard.user.entity.User;
 import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +67,22 @@ public class UserService {
         String token = jwtUtil.generateToken(user.getName(), user.getRole());
 
         return ApiResponse.success("로그인 성공", LoginResponse.from(token));
+    }
+
+    /**
+     * 비밀번호 확인
+     * @param username 로그인한 사용자 아이디
+     * @param request 비밀번호 확인 요청 DTO (비밀번호)
+     * @return 비밀번호 응답 DTO (일치 여부)
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<PasswordResponse> verifyPassword(String username, PasswordRequest request) {
+        // 로그인된 아이디 확인 → 사용자 조회
+        User user = userRepository.findByName(username)
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
+
+        boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
+
+        return ApiResponse.success("비밀번호가 확인되었습니다.", PasswordResponse.from(valid));
     }
 }

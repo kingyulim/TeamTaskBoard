@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;*/
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -73,5 +75,14 @@ public class UserController {
         @PathVariable Long userId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
+    }
+
+    /**
+     * 사용자 목록 조회 요청 검증
+     * @return List<GetUserResponse> 반환
+     */
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<List<GetUserResponse>>> getUserList() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserList());
     }
 }

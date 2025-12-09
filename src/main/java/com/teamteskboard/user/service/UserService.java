@@ -59,7 +59,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public ApiResponse<LoginResponse> login(LoginRequest request) {
         // 아이디 확인 → 사용자 조회
-        User user = userRepository.findByName(request.getUsername())
+        User user = userRepository.findByUserName(request.getUsername())
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         // 삭제된 계정인지, 비밀번호가 일치하는지 확인
@@ -67,7 +67,7 @@ public class UserService {
             throw new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS);
 
         // 토큰 생성
-        String token = jwtUtil.generateToken(user.getName(), user.getRole());
+        String token = jwtUtil.generateToken(user.getUserName(), user.getRole());
 
         return ApiResponse.success("로그인 성공", LoginResponse.from(token));
     }
@@ -81,7 +81,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public ApiResponse<PasswordResponse> verifyPassword(String username, PasswordRequest request) {
         // 로그인된 아이디 확인 → 사용자 조회
-        User user = userRepository.findByName(username)
+        User user = userRepository.findByUserName(username)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());

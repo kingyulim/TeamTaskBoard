@@ -4,10 +4,7 @@ import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.team.dto.request.CreatedTeamMemberRequest;
 import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
-import com.teamteskboard.team.dto.response.CreatedTeamResponse;
-import com.teamteskboard.team.dto.response.GetAllTeamsResponse;
-import com.teamteskboard.team.dto.response.GetOneTeamResponse;
-import com.teamteskboard.team.dto.response.UpdatedTeamResponse;
+import com.teamteskboard.team.dto.response.*;
 import com.teamteskboard.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -62,15 +59,37 @@ public class TeamController {
 
     // 팀 멤버 추가 API
     @PostMapping("/teams/{teamId}/members")
-    public ResponseEntity<ApiResponse<CreatedTeamResponse>> addTeamMember(
+    public ResponseEntity<ApiResponse<CreatedTeamResponse>> addTeamMemberApi(
             @PathVariable Long teamId,
             @RequestBody CreatedTeamMemberRequest request
     ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "팀 멤버가 추가되었습니다.", teamService.createdTeamMember(teamId, request)
-                )
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 멤버가 추가되었습니다.", teamService.createdTeamMember(teamId, request))
         );
     }
+
+    // 팀 멤버 조회 API
+    @GetMapping("/teams/{teamId}/members")
+    public ResponseEntity<ApiResponse<List<TeamMemberResponse>>> getTeamMemberApi(
+            @PathVariable Long teamId
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 멤버 조회 성공", teamService.getTeamMembers(teamId)));
+    }
+
+    // 팀 멤버 제거 API
+    @DeleteMapping("/teams/{teamId}/members/{userId}")
+    public ResponseEntity<ApiResponse<Void>> removeTeamMemberApi(
+            @PathVariable Long teamId,
+            @PathVariable Long userId
+    ) {
+        teamService.removeTeamMember(teamId, userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 멤버가 제거되었습니다.", null));
+    }
+
 
 }

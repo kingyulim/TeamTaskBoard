@@ -6,6 +6,7 @@ import com.teamteskboard.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserTeamsRepository extends JpaRepository<UserTeams, Long> {
     List<UserTeams> findAllByTeamId(Long teamId);
@@ -15,4 +16,8 @@ public interface UserTeamsRepository extends JpaRepository<UserTeams, Long> {
     boolean existsByTeamAndUser(Team team, User user);
 
     List<UserTeams> findByTeam(Team team);
+
+    List<UserTeams> findAllByTeam(Team team);
+
+    Optional<UserTeams> findByTeamAndUser(Team team, User user);
 }

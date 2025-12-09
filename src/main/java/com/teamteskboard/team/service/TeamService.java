@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -154,7 +155,7 @@ public class TeamService {
 
         // 이미 가입된 멤버인지 확인
         boolean exists = userTeamsRepository.existsByTeamAndUser(team, user);
-        if (!exists) {
+        if (exists) {
             throw new CustomException(ExceptionMessageEnum.TEAM_MEMBER_ALREADY_EXISTS);
         }
 
@@ -179,4 +180,50 @@ public class TeamService {
         return CreatedTeamResponse.from(team, members);
     }
 
+    // 팀 멤버 조회
+    @Transactional(readOnly = true)
+    public List<TeamMemberResponse> getTeamMembers(Long teamId) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        List<UserTeams> userTeams = userTeamsRepository.findAllByTeam(team);
+
+        return userTeams.stream()
+                .map(ut -> {
+                    User user = ut.getUser();
+                    return new TeamMemberResponse(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getName(),
+                            user.getEmail(),
+                            user.getRole(),
+                            user.getCreatedAt()
+                    );
+                })
+                .toList();
+    }
+
+    // 팀 멤버 삭제 기능
+    @Transactional
+    public void removeTeamMember(Long teamId, Long userId) {
+
+        // 1. 팀 존재 확인
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        // 2. 유저 존재 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NO_MEMBER_ID));
+
+        // 3. 팀 멤버 존재 확인
+        UserTeams userTeam = userTeamsRepository.findByTeamAndUser(team, user)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_MEMBER_NOT_FOUND));
+
+        // 4. 권한 체크 (추가 예정)
+
+
+        // 5. 삭제
+        userTeamsRepository.delete(userTeam);
+    }
 }

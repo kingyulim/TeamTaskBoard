@@ -2,7 +2,9 @@ package com.teamteskboard.user.controller;
 
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
+import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.response.CreateUserResponse;
+import com.teamteskboard.user.dto.response.LoginResponse;
 import com.teamteskboard.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,5 +30,18 @@ public class UserController {
             @RequestBody CreateUserRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
+    }
+
+    /**
+     * 로그인
+     * @param request 로그인 요청 DTO (아이디, 비밀번호)
+     * @return 로그인 응답 DTO (토큰)
+     */
+    @PostMapping("/auth")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
+            @RequestBody LoginRequest request
+    ) {
+        ApiResponse<LoginResponse> result = userService.login(request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionMessageEnum {
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
     NO_MEMBER_ID(HttpStatus.NOT_FOUND, "해당 ID의 회원을 찾을 수 없습니다."),
     NO_MEMBER_INFO(HttpStatus.NOT_FOUND, "해당 회원 정보를 찾을 수 없습니다."),
     LOGIN_CHECK(HttpStatus.UNAUTHORIZED, "로그인이 되어있습니다."),

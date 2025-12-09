@@ -33,7 +33,7 @@ public class User extends BaseTimeEntity {
     private UserRoleEnum role;
 
     @Column(nullable = false)
-    private Boolean disDeleted = false;
+    private Boolean isDeleted = false;
 
     // 생성자
     public User(String name, String email, String password) {

@@ -1,6 +1,7 @@
 package com.teamteskboard.team.controller;
 
 import com.teamteskboard.common.dto.response.ApiResponse;
+import com.teamteskboard.team.dto.request.CreatedTeamMemberRequest;
 import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
 import com.teamteskboard.team.dto.response.CreatedTeamResponse;
@@ -57,6 +58,19 @@ public class TeamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(Id, request)));
+    }
+
+    // 팀 멤버 추가 API
+    @PostMapping("/teams/{teamId}/members")
+    public ResponseEntity<ApiResponse<CreatedTeamResponse>> addTeamMember(
+            @PathVariable Long teamId,
+            @RequestBody CreatedTeamMemberRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "팀 멤버가 추가되었습니다.", teamService.createdTeamMember(teamId, request)
+                )
+        );
     }
 
 }

@@ -2,6 +2,7 @@ package com.teamteskboard.team.service;
 
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
+import com.teamteskboard.team.dto.request.CreatedTeamMemberRequest;
 import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
 import com.teamteskboard.team.dto.response.*;
@@ -9,6 +10,8 @@ import com.teamteskboard.team.entity.Team;
 import com.teamteskboard.team.entity.UserTeams;
 import com.teamteskboard.team.repository.TeamRepository;
 import com.teamteskboard.team.repository.UserTeamsRepository;
+import com.teamteskboard.user.entity.User;
+import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserTeamsRepository userTeamsRepository;
+    private final UserRepository userRepository;
 
     // 팀 생성
     @Transactional
@@ -135,4 +139,44 @@ public class TeamService {
         // 5. 수정된 팀 정보 반환
         return UpdatedTeamResponse.from(team, memberResponses);
     }
+
+    // 팀 멤버 추가
+    @Transactional
+    public CreatedTeamResponse createdTeamMember(Long teamId, CreatedTeamMemberRequest request) {
+
+        // 팀 존재 확인
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        // 유저 존재 확인
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NO_MEMBER_ID));
+
+        // 이미 가입된 멤버인지 확인
+        boolean exists = userTeamsRepository.existsByTeamAndUser(team, user);
+        if (!exists) {
+            throw new CustomException(ExceptionMessageEnum.TEAM_MEMBER_ALREADY_EXISTS);
+        }
+
+        // 중간 테이블 저장 (팀-유저 매핑)
+        UserTeams userTeams = new UserTeams(team, user);
+        userTeamsRepository.save(userTeams);
+
+        // 현재 팀 멤버 전체 조회
+        List<UserTeams> teamUsers = userTeamsRepository.findByTeam(team);
+
+        List<TeamMemberResponse> members = teamUsers.stream()
+                .map(ut -> new TeamMemberResponse(
+                        ut.getUser().getId(),
+                        ut.getUser().getUsername(),
+                        ut.getUser().getName(),
+                        ut.getUser().getEmail(),
+                        ut.getUser().getRole(),
+                        ut.getUser().getCreatedAt()
+                ))
+                .toList();
+
+        return CreatedTeamResponse.from(team, members);
+    }
+
 }

@@ -51,4 +51,29 @@ public class CommentService {
                 save.getModifiedAt()
         );
     }
+
+    @Transactional(readOnly = false)
+    public List<GetCommentResponseDto> getAll() {
+
+        //비활성된 데이토 조회 X 할 예정 ->findAllByIsDeleted(IsDelete.N);
+        List<Comment> comments = commentRepository.findAll();
+
+        //반환
+        List<GetCommentResponseDto> dtos = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            User user = comment.getUser();
+            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRole());
+
+            GetCommentResponseDto getCommentResponseDto = new GetCommentResponseDto(
+                    comment.getCommentId(),
+                    comment.getContent(),
+                    comment.getTask().getId(),
+                    comment.getUser().getId(),
+                    userDto
+            );
+            dtos.add(getCommentResponseDto);
+        }
+        return dtos;
+    }
 }

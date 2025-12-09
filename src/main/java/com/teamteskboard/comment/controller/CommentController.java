@@ -1,12 +1,8 @@
 package com.teamteskboard.comment.controller;
 
-import com.teamteskboard.comment.dto.ApiResponse;
-import com.teamteskboard.comment.dto.CreatedCommentRequest;
-import com.teamteskboard.comment.dto.CreatedCommentResponse;
-import com.teamteskboard.comment.dto.GetCommentResponseDto;
+import com.teamteskboard.comment.dto.*;
 import com.teamteskboard.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,6 +40,20 @@ public class CommentController {
         ResponseEntity<ApiResponse<List<GetCommentResponseDto>>> responseDto = new ResponseEntity<>(apiResponse, HttpStatus.OK);
         return responseDto;
     }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ApiResponse<UpdateCommentResponse>> commentUpdate(
+            @PathVariable Long userId,
+            @PathVariable Long taskId,
+            @PathVariable Long commentId,
+            @RequestBody UpdateCommentRequest request) {
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        ApiResponse apiResponse = new ApiResponse<>(true, "댓글을 수정했습니다.", commentService.update(userId, commentId, request), timestamp);
+        ResponseEntity<ApiResponse<UpdateCommentResponse>> responseDto = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return responseDto;
+    }
+
 }
 
 

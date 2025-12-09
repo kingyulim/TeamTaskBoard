@@ -2,6 +2,7 @@ package com.teamteskboard.user.service;
 
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.common.enums.UserRoleEnum;
+import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.response.CreateUserResponse;
 import com.teamteskboard.user.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 회원가입 비지니스 로직 처리
@@ -24,8 +26,9 @@ public class UserService {
     public ApiResponse<CreateUserResponse> createUser(CreateUserRequest request) {
         User user = new User(
                 request.getName(),
+                request.getUserName(),
                 request.getEmail(),
-                request.getPassword()
+                passwordEncoder.encode(request.getPassword())
         );
 
         user.setRole(UserRoleEnum.USER);

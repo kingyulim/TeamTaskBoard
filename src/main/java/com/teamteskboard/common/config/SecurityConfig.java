@@ -22,10 +22,11 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    @Bean
+    // 김규림 202512091905 주석
+   /* @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -4,10 +4,7 @@ import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
-import com.teamteskboard.team.dto.response.CreatedTeamResponse;
-import com.teamteskboard.team.dto.response.GetAllTeamsResponse;
-import com.teamteskboard.team.dto.response.TeamMemberResponse;
-import com.teamteskboard.team.dto.response.UpdatedTeamResponse;
+import com.teamteskboard.team.dto.response.*;
 import com.teamteskboard.team.entity.Team;
 import com.teamteskboard.team.entity.UserTeams;
 import com.teamteskboard.team.repository.TeamRepository;
@@ -49,7 +46,56 @@ public class TeamService {
         return CreatedTeamResponse.from(team, Collections.emptyList());
     }
 
-    // 팀 전체 조회
+    // 팀 목록 전체 조회
+    @Transactional(readOnly = true)
+    public List<GetAllTeamsResponse> getAllTeams() {
+
+        // 1. 모든 팀 조회
+        List<Team> teams = teamRepository.findAll();
+
+        // 2. 각 팀별 멤버 조회 및 매핑
+        return teams.stream()
+                .map(team -> {
+                    List<UserTeams> members = userTeamsRepository.findAllByTeamId(team.getId());
+
+                    List<TeamMemberResponse> memberResponses = members.stream()
+                            .map(ut -> new TeamMemberResponse(
+                                    ut.getUser().getId(),
+                                    ut.getUser().getUsername(),
+                                    ut.getUser().getName(),
+                                    ut.getUser().getEmail(),
+                                    ut.getUser().getRole(),
+                                    ut.getCreatedAt()
+                            ))
+                            .toList();
+
+                    return GetAllTeamsResponse.from(team, memberResponses);
+                })
+                .toList();
+    }
+
+    // 팀 상세 조회(단 건)
+    @Transactional(readOnly = true)
+    public GetOneTeamResponse getOneTeam(Long id) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        List<UserTeams> userTeams = userTeamsRepository.findByTeamId(team.getId());
+
+        List<TeamMemberResponse> members = userTeams.stream()
+                .map(ut -> new TeamMemberResponse(
+                        ut.getUser().getId(),
+                        ut.getUser().getUsername(),
+                        ut.getUser().getName(),
+                        ut.getUser().getEmail(),
+                        ut.getUser().getRole(),
+                        ut.getUser().getCreatedAt()
+                ))
+                .toList();
+
+
+        return GetOneTeamResponse.from(team, members);
+    }
 
 
     // 팀 수정
@@ -81,38 +127,12 @@ public class TeamService {
                         ut.getUser().getUsername(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole()
+                        ut.getUser().getRole(),
+                        ut.getCreatedAt()
                 ))
                 .toList();
 
         // 5. 수정된 팀 정보 반환
         return UpdatedTeamResponse.from(team, memberResponses);
-    }
-
-    // 팀 목록 전체 조회
-    @Transactional(readOnly = true)
-    public List<GetAllTeamsResponse> getAllTeams() {
-
-        // 1. 모든 팀 조회
-        List<Team> teams = teamRepository.findAll();
-
-        // 2. 각 팀별 멤버 조회 및 매핑
-        return teams.stream()
-                .map(team -> {
-                    List<UserTeams> members = userTeamsRepository.findAllByTeamId(team.getId());
-
-                    List<TeamMemberResponse> memberResponses = members.stream()
-                            .map(ut -> new TeamMemberResponse(
-                                    ut.getUser().getId(),
-                                    ut.getUser().getUsername(),
-                                    ut.getUser().getName(),
-                                    ut.getUser().getEmail(),
-                                    ut.getUser().getRole()
-                            ))
-                            .toList();
-
-                    return GetAllTeamsResponse.from(team, memberResponses);
-                })
-                .toList();
     }
 }

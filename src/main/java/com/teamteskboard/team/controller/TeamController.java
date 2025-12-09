@@ -5,6 +5,7 @@ import com.teamteskboard.team.dto.request.CreatedTeamRequest;
 import com.teamteskboard.team.dto.request.UpdatedTeamRequest;
 import com.teamteskboard.team.dto.response.CreatedTeamResponse;
 import com.teamteskboard.team.dto.response.GetAllTeamsResponse;
+import com.teamteskboard.team.dto.response.GetOneTeamResponse;
 import com.teamteskboard.team.dto.response.UpdatedTeamResponse;
 import com.teamteskboard.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -39,15 +40,23 @@ public class TeamController {
                 .body(ApiResponse.success("팀 목록 조회 성공", teamService.getAllTeams()));
     }
 
+    // 팀 상세 조회 API
+    @GetMapping("/teams/{id}")
+    public ApiResponse<GetOneTeamResponse> getOneTeamApi(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success("팀 조회 성공", teamService.getOneTeam(id));
+    }
+
     // 팀 수정 API
-    @PutMapping("/teams/{teamId}")
+    @PutMapping("/teams/{Id}")
     public ResponseEntity<ApiResponse<UpdatedTeamResponse>> updateTeamApi(
-            @PathVariable Long teamId,
+            @PathVariable Long Id,
             @RequestBody UpdatedTeamRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(teamId, request)));
+                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(Id, request)));
     }
 
 }

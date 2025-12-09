@@ -1,9 +1,9 @@
 package com.teamteskboard.team.dto.response;
 
-import com.teamteskboard.team.entity.UserTeams;
-import com.teamteskboard.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -14,4 +14,5 @@ public class TeamMemberResponse {
     private String name;
     private String email;
     private String role;
+    private LocalDateTime createdAt;
 }

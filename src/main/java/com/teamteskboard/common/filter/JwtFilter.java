@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // JWT 검증이 필요 없는 경우
         String requestURI = request.getRequestURI(); // 요청 URI
-        if(requestURI.equals("/api/auth/login")) {
+        if(requestURI.equals("/api/auth/login") || requestURI.equals("/api/users")) {
             filterChain.doFilter(request,response); // 필터 통과
             return;
         }
@@ -52,11 +52,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // JWT 토큰에서 복호화 한 데이터 저장하기
-        String userId = jwtUtil.extractUserId(jwt); // 유저 ID
+        String username = jwtUtil.extractUsername(jwt); // 유저 ID
         String auth = jwtUtil.extractRole(jwt); // 권한
         UserRoleEnum userRole = UserRoleEnum.valueOf(auth);
 
-        User user = new User(userId,"", List.of(userRole::getRole));
+        User user = new User(username,"", List.of(userRole::getRole));
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
 
         filterChain.doFilter(request, response); // 필터 통과

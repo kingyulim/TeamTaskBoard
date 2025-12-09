@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, SecurityContextHolderAwareRequestFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         // 회원가입, 로그인은 누구나 접근 가능
-                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/users").permitAll()
                         .anyRequest().authenticated() // 나머지는 로그인한 사용자만 접근 가능
                 )
                 .build();

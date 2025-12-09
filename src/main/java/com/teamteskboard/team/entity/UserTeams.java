@@ -1,7 +1,6 @@
 package com.teamteskboard.team.entity;
 
 import com.teamteskboard.task.entity.Task;
-import com.teamteskboard.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,12 +21,12 @@ public class UserTeams {
     private Task task_id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id")
-    private User user_id;
+    @JoinColumn(name = "team_id")
+    private Team team_id;
 
     // 생성자
-    public UserTeams(Task task_id, User user_id) {
+    public UserTeams(Task task_id, Team team_id) {
         this.task_id = task_id;
-        this.user_id = user_id;
+        this.team_id = team_id;
     }
 }

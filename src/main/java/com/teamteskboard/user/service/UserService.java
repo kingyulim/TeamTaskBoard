@@ -51,7 +51,7 @@ public class UserService {
      * @param request 로그인 요청 DTO (아이디, 비밀번호)
      * @return 로그인 응답 DTO (토큰)
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResponse<LoginResponse> login(LoginRequest request) {
         // 아이디 확인 → 사용자 조회
         User user = userRepository.findByName(request.getUsername())
@@ -62,7 +62,7 @@ public class UserService {
             throw new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS);
 
         // 토큰 생성
-        String token = jwtUtil.generateToken(user.getId(), user.getRole());
+        String token = jwtUtil.generateToken(user.getName(), user.getRole());
 
         return ApiResponse.success("로그인 성공", LoginResponse.from(token));
     }

@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
@@ -23,11 +21,6 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -36,7 +29,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, SecurityContextHolderAwareRequestFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         // 회원가입, 로그인은 누구나 접근 가능
-                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/users").permitAll()
                         .anyRequest().authenticated() // 나머지는 로그인한 사용자만 접근 가능
                 )
                 .build();

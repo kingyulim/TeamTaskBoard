@@ -44,8 +44,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
            @Valid @RequestBody LoginRequest request
     ) {
-        ApiResponse<LoginResponse> result = userService.login(request);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        LoginResponse result = userService.login(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("로그인 성공", result));
     }
 
     /**
@@ -59,8 +61,15 @@ public class UserController {
             @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody PasswordRequest request
     ) {
-        ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getId(), request);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        PasswordResponse result = userService.verifyPassword(user.getId(), request);
+
+        if (result.isValid())
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("비밀번호가 확인되었습니다.", result));
+        else
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("비밀번호가 올바르지 않습니다.", result));
+
     }
 
     /**

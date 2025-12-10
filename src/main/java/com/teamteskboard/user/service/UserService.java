@@ -74,7 +74,7 @@ public class UserService {
      * @return 로그인 응답 DTO (토큰)
      */
     @Transactional(readOnly = true)
-    public ApiResponse<LoginResponse> login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         // 아이디 확인 → 사용자 조회
         User user = userRepository.findByUserName(request.getUsername())
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
@@ -86,24 +86,24 @@ public class UserService {
         // 토큰 생성
         String token = jwtUtil.generateToken(user.getId(), user.getUserName(), user.getRole());
 
-        return ApiResponse.success("로그인 성공", LoginResponse.from(token));
+        return LoginResponse.from(token);
     }
 
     /**
      * 비밀번호 확인
-     * @param id 로그인한 사용자 아이디
+     * @param id 로그인한 유저 ID
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
     @Transactional(readOnly = true)
-    public ApiResponse<PasswordResponse> verifyPassword(Long id, PasswordRequest request) {
+    public PasswordResponse verifyPassword(Long id, PasswordRequest request) {
         // 로그인된 아이디 확인 → 사용자 조회
         User user = userRepository.findById(id)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        return ApiResponse.success("비밀번호가 확인되었습니다.", PasswordResponse.from(valid));
+        return PasswordResponse.from(valid);
     }
 
     /**

@@ -5,20 +5,17 @@ import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
-import com.teamteskboard.user.dto.response.CreateUserResponse;
-import com.teamteskboard.user.dto.response.LoginResponse;
-import com.teamteskboard.user.dto.response.PasswordResponse;
+import com.teamteskboard.user.dto.request.UpdateUserRequest;
+import com.teamteskboard.user.dto.response.*;
 import com.teamteskboard.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,7 +57,7 @@ public class UserController {
     @PostMapping("/auth/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
             @AuthenticationPrincipal SecurityUser user,
-            @RequestBody PasswordRequest request
+            @Valid @RequestBody PasswordRequest request
     ) {
         ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getId(), request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -89,17 +86,21 @@ public class UserController {
 
     /**
      * 회원정보 수정 요청 검증
-     * @param user
-     * @param id
-     * @param request
-     * @return
+     * @param user 토큰 값 파라미터
+     * @param id 회원 고유 번호
+     * @param request 입력값 파라미터
+     * @return ApiResponse<UpdateUserResponse> 반환
      */
-    /*@PutMapping("/users/{id}")
+    @PutMapping("/users/{id}")
     public ResponseEntity<ApiResponse<UpdateUserResponse>> updateUser(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal SecurityUser user,
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request
     ) {
+        if (!user.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+        }
 
-    }*/
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(id, request));
+    }
 }

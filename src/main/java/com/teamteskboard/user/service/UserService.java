@@ -148,15 +148,10 @@ public class UserService {
     @Transactional
     public ApiResponse<UpdateUserResponse> updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 회원 번호 체크
-        if (user == null) {
-            return ApiResponse.error("사용자를 찾을 수 없습니다.");
-        }
-
-        // 이메일 중복 체크
-        if (userRepository.existsByEmail(request.getEmail())) {
+        // 이메일 중복 체크 (자기 자신 제외)
+        if (request.getEmail() != null && userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
             return ApiResponse.error("이미 사용 중인 이메일입니다.");
         }
 
@@ -171,7 +166,7 @@ public class UserService {
         }
 
         // 비밀번호 수정
-        if (request.getPassword() != null) {
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 

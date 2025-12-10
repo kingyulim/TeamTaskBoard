@@ -2,7 +2,6 @@ package com.teamteskboard.task.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;
-import com.teamteskboard.task.dto.request.UpdateTaskStatusRequest;
 import com.teamteskboard.task.enums.TaskPriorityEnum;
 import com.teamteskboard.task.enums.TaskStatusEnum;
 import com.teamteskboard.user.entity.User;

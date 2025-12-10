@@ -1,6 +1,5 @@
 package com.teamteskboard.task.service;
 
-import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.task.dto.request.CreateTaskRequest;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;

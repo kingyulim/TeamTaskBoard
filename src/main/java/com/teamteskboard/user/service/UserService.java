@@ -172,4 +172,16 @@ public class UserService {
 
         return ApiResponse.success("사용자 정보가 수정되었습니다.", UpdateUserResponse.from(user));
     }
+
+    /**
+     * 회원탈퇴 비지니스 로직 처리
+     * @param userId 회원 고유 번호
+     */
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        userRepository.delete(user);
+    }
 }

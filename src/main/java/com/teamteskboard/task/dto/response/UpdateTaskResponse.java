@@ -1,6 +1,5 @@
 package com.teamteskboard.task.dto.response;
 
-import com.teamteskboard.task.dto.request.UpdateTaskRequest;
 import com.teamteskboard.task.entity.Task;
 import com.teamteskboard.task.enums.TaskPriorityEnum;
 import com.teamteskboard.task.enums.TaskStatusEnum;

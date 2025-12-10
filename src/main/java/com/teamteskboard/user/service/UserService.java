@@ -10,10 +10,8 @@ import com.teamteskboard.common.utils.JwtUtil;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
-import com.teamteskboard.user.dto.response.CreateUserResponse;
-import com.teamteskboard.user.dto.response.GetUserResponse;
-import com.teamteskboard.user.dto.response.LoginResponse;
-import com.teamteskboard.user.dto.response.PasswordResponse;
+import com.teamteskboard.user.dto.request.UpdateUserRequest;
+import com.teamteskboard.user.dto.response.*;
 import com.teamteskboard.user.entity.User;
 import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -139,5 +137,44 @@ public class UserService {
                 .toList();
 
         return ApiResponse.success("사용자 목록 조회 성공", getUserResponseList);
+    }
+
+    /**
+     * 회원정보 수정 비지니스 로직 처리
+     * @param userId 회원 고유 번호
+     * @param request 수정할 데이터 파라미터
+     * @return UpdateUserResponse json 반환
+     */
+    @Transactional
+    public ApiResponse<UpdateUserResponse> updateUser(Long userId, UpdateUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElse(null);
+
+        // 회원 번호 체크
+        if (user == null) {
+            return ApiResponse.error("사용자를 찾을 수 없습니다.");
+        }
+
+        // 이메일 중복 체크
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+        }
+
+        // 이름 수정
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+
+        // 이메일 수정
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+
+        // 비밀번호 수정
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        return ApiResponse.success("사용자 정보가 수정되었습니다.", UpdateUserResponse.from(user));
     }
 }

@@ -31,7 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // JWT 검증이 필요 없는 경우
         String requestURI = request.getRequestURI(); // 요청 URI
-        if(requestURI.equals("/api/auth/login") || requestURI.equals("/api/users")) {
+        String method = request.getMethod(); // 요청 메서드
+        if(method.equals("POST") && (requestURI.equals("/api/auth/login") || requestURI.equals("/api/users"))) {
             filterChain.doFilter(request,response); // 필터 통과
             return;
         }

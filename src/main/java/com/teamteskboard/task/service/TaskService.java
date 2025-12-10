@@ -37,7 +37,7 @@ public class TaskService {
     @Transactional
     public CreateTaskResponse saveTask(CreateTaskRequest request) {
 
-        User assignee = userRepository.findById(request.getAssigneeId())
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
         Task task = new Task(request.getTitle(), request.getDescription(), request.getPriority(), assignee, request.getDueDate());
@@ -92,9 +92,14 @@ public class TaskService {
             throw new CustomException(TASK_ACCESS_DENIED);
         }
 
+        User updatedAssignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
+                .orElseThrow(() -> new CustomException(NO_USER_ID));
+
+        task.changeAssignee(updatedAssignee);
+
         task.update(request);
 
-        Task updatedTask = taskRepository.save(task);
+        Task updatedTask = taskRepository.saveAndFlush(task);
 
         return UpdateTaskResponse.from(updatedTask);
 

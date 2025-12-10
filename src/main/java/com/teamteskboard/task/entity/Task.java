@@ -68,6 +68,10 @@ public class Task extends BaseTimeEntity {
 
     }
 
+    public void changeAssignee(User assignee){
+        this.assignee = assignee;
+    }
+
     public void updateStatus(TaskStatusEnum status) {
         this.status = status;
     }

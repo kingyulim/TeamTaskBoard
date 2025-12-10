@@ -1,5 +1,6 @@
 package com.teamteskboard.task.controller;
 
+import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.task.dto.request.CreateTaskRequest;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;
@@ -13,7 +14,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +26,6 @@ public class TaskController {
     // 생성
     @PostMapping("/api/tasks")
     public ResponseEntity<ApiResponse<CreateTaskResponse>> createTask(
-            /*@AuthenticationPrincipal User user,*/
             @Valid @RequestBody CreateTaskRequest request ) {
 
         return ResponseEntity.ok(taskService.saveTask(request));
@@ -52,30 +52,30 @@ public class TaskController {
     // 수정
     @PutMapping("/api/tasks/{id}")
     public ResponseEntity<ApiResponse<UpdateTaskResponse>> updateTask(
-            /*@AuthenticationPrincipal User user,*/
+            @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody UpdateTaskRequest request,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.updateTask(request, id, 1L)); // 임시 값
+        return ResponseEntity.ok(taskService.updateTask(request, id, user.getId()));
     }
 
     // 상태 수정
     @PatchMapping("/api/tasks/{id}/status")
     public ResponseEntity<ApiResponse<UpdateTaskResponse>> updateTaskStatus(
-            /*@AuthenticationPrincipal User user,*/
+            @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody UpdateTaskStatusRequest request,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.updateTaskStatus(request, id, 1L));
+        return ResponseEntity.ok(taskService.updateTaskStatus(request, id, user.getId()));
     }
 
     // 삭제
     @DeleteMapping("/api/tasks/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteTask(
-            /*@AuthenticationPrincipal User user,*/
+            @AuthenticationPrincipal SecurityUser user,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.deleteTask(id, 1L));
+        return ResponseEntity.ok(taskService.deleteTask(id, user.getId()));
     }
 
 

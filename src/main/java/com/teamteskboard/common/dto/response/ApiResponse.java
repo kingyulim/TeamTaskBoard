@@ -1,12 +1,10 @@
 package com.teamteskboard.common.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private final boolean success;
@@ -37,6 +35,16 @@ public class ApiResponse<T> {
                 false,
                 message,
                 null,
+                LocalDateTime.now()
+        );
+    }
+
+    // 실패 응답2
+    public static <T> ApiResponse<T> error(String message, T data) {
+        return new ApiResponse<>(
+                false,
+                message,
+                data,
                 LocalDateTime.now()
         );
     }

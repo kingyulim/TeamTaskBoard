@@ -1,5 +1,6 @@
 package com.teamteskboard.user.controller;
 
+import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,10 +57,10 @@ public class UserController {
      */
     @PostMapping("/auth/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal SecurityUser user,
             @RequestBody PasswordRequest request
     ) {
-        ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getUsername(), request);
+        ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getId(), request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

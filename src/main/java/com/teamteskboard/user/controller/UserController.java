@@ -1,11 +1,13 @@
 package com.teamteskboard.user.controller;
 
+import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
-import com.teamteskboard.user.dto.request.UpdateUserRequest;
-import com.teamteskboard.user.dto.response.*;
+import com.teamteskboard.user.dto.response.CreateUserResponse;
+import com.teamteskboard.user.dto.response.LoginResponse;
+import com.teamteskboard.user.dto.response.PasswordResponse;
 import com.teamteskboard.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,10 +59,10 @@ public class UserController {
      */
     @PostMapping("/auth/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
-            @AuthenticationPrincipal User user,
-            @Valid @RequestBody PasswordRequest request
+            @AuthenticationPrincipal SecurityUser user,
+            @RequestBody PasswordRequest request
     ) {
-        ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getUsername(), request);
+        ApiResponse<PasswordResponse> result = userService.verifyPassword(user.getId(), request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

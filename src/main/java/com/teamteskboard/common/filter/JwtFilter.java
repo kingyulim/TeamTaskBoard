@@ -2,6 +2,7 @@ package com.teamteskboard.common.filter;
 
 import static com.teamteskboard.common.utils.JwtUtil.BEARER_PREFIX;
 
+import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.enums.UserRoleEnum;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.teamteskboard.common.utils.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -53,11 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // JWT 토큰에서 복호화 한 데이터 저장하기
-        String username = jwtUtil.extractUsername(jwt); // 유저 ID
+        Long userId = jwtUtil.extractUserId(jwt); // 유저 ID
+        String username = jwtUtil.extractUsername(jwt); // 유저 이름
         String auth = jwtUtil.extractRole(jwt); // 권한
         UserRoleEnum userRole = UserRoleEnum.valueOf(auth);
 
-        User user = new User(username,"", List.of(userRole::getRole));
+        SecurityUser user = new SecurityUser(userId, username,"", List.of(userRole::getRole));
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
 
         filterChain.doFilter(request, response); // 필터 통과

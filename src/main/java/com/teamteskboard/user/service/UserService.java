@@ -84,21 +84,21 @@ public class UserService {
             throw new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS);
 
         // 토큰 생성
-        String token = jwtUtil.generateToken(user.getUserName(), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getUserName(), user.getRole());
 
         return ApiResponse.success("로그인 성공", LoginResponse.from(token));
     }
 
     /**
      * 비밀번호 확인
-     * @param username 로그인한 사용자 아이디
+     * @param id 로그인한 사용자 아이디
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
     @Transactional(readOnly = true)
-    public ApiResponse<PasswordResponse> verifyPassword(String username, PasswordRequest request) {
+    public ApiResponse<PasswordResponse> verifyPassword(Long id, PasswordRequest request) {
         // 로그인된 아이디 확인 → 사용자 조회
-        User user = userRepository.findByUserName(username)
+        User user = userRepository.findById(id)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());

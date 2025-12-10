@@ -47,9 +47,10 @@ public class JwtUtil {
      * @param username 아이디
      * @return 생성된 토큰
      */
-    public String generateToken(String username, UserRoleEnum userRole) {
+    public String generateToken(Long userId, String username, UserRoleEnum userRole) {
         Date now = new Date();
         return BEARER_PREFIX + Jwts.builder()
+                .claim("userId", userId) // 유저 ID
                 .claim("username", username) // 유저 ID
                 .claim("auth", userRole) // 권한
                 .issuedAt(now) // 토큰 발급 시간
@@ -78,6 +79,11 @@ public class JwtUtil {
     // 토큰의 모든 클레임을 복호화
     private Claims extractAllClaims(String token) {
         return parser.parseSignedClaims(token).getPayload();
+    }
+
+    // 유저 Id만 복호화
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     // 유저 Id만 복호화

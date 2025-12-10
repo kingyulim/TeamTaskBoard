@@ -16,8 +16,8 @@ public class AssigneeResponse {
     public static AssigneeResponse from(User user) {
         return new AssigneeResponse(
                 user.getId(),
-                user.getUsername(),
-                "test name"// user.getName() // name 컬럼 추가 후 수정 예정
+                user.getUserName(),
+                user.getName() // name 컬럼 추가 후 수정 예정
         );
     }
 }

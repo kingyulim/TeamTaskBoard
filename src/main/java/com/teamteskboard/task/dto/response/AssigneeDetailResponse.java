@@ -17,8 +17,8 @@ public class AssigneeDetailResponse {
     public static AssigneeDetailResponse from(User user) {
         return new AssigneeDetailResponse(
                 user.getId(),
-                user.getUsername(),
-                "test name",// user.getName() // name 컬럼 추가 후 수정 예정
+                user.getUserName(),
+                user.getName(),
                 user.getEmail()
         );
     }

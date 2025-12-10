@@ -35,7 +35,7 @@ public class UserService {
     @Transactional
     public ApiResponse<CreateUserResponse> createUser(CreateUserRequest request) {
         // userName 중복 체크
-        if (userRepository.existsByUserName(request.getUserName())) {
+        if (userRepository.existsByUserName(request.getUsername())) {
             return ApiResponse.error("이미 존재하는 사용자 명입니다.");
         }
 
@@ -52,7 +52,7 @@ public class UserService {
         // User 생성
         User user = new User(
                 request.getName(),
-                request.getUserName(),
+                request.getUsername(),
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword())
         );

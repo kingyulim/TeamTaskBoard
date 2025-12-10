@@ -68,8 +68,8 @@ public class Task extends BaseTimeEntity {
 
     }
 
-    public void updateStatus(UpdateTaskStatusRequest request) {
-        this.status = request.getStatus();
+    public void updateStatus(TaskStatusEnum status) {
+        this.status = status;
     }
 
     public void softDelete() {

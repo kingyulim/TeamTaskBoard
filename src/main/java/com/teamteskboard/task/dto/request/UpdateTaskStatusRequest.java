@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class UpdateTaskStatusRequest {
 
     @NotNull
-    private TaskStatusEnum status;
+    private String status;
 
 }

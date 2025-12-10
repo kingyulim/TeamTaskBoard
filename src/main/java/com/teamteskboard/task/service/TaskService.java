@@ -109,7 +109,14 @@ public class TaskService {
             throw new CustomException(TASK_ACCESS_DENIED);
         }
 
-        task.updateStatus(request);
+        TaskStatusEnum status;
+        try{
+            status = TaskStatusEnum.valueOf(request.getStatus());
+        } catch (IllegalArgumentException | NullPointerException e){
+            throw new CustomException(INVALID_TASK_STATUS);
+        }
+
+        task.updateStatus(status);
 
         Task updatedTask = taskRepository.save(task);
 

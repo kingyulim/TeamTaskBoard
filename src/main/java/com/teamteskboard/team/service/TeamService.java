@@ -15,10 +15,8 @@ import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,6 +137,24 @@ public class TeamService {
 
         // 5. 수정된 팀 정보 반환
         return UpdatedTeamResponse.from(team, memberResponses);
+    }
+
+    // 팀 삭제
+    @Transactional
+    public void deleteTeam(Long teamId) {
+
+        // 1. 팀 존재 여부 확인
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        // 2. 팀에 멤버 존재 여부 확인
+        List<UserTeams> members = userTeamsRepository.findAllByTeam(team);
+        if (!members.isEmpty()) {
+            throw new CustomException(ExceptionMessageEnum.TEAM_DELETE_HAS_MEMBERS);
+        }
+
+        // 3. 팀 삭제
+        teamRepository.delete(team);
     }
 
     // 팀 멤버 추가

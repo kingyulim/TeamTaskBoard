@@ -57,6 +57,18 @@ public class TeamController {
                 .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(Id, request)));
     }
 
+    // 팀 삭제 API
+    @DeleteMapping("/teams/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTeamApi(
+            @PathVariable Long id
+    ) {
+        teamService.deleteTeam(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("팀이 삭제되었습니다.", null));
+    }
+
+
     // 팀 멤버 추가 API
     @PostMapping("/teams/{teamId}/members")
     public ResponseEntity<ApiResponse<CreatedTeamResponse>> addTeamMemberApi(

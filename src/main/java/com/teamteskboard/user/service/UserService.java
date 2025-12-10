@@ -33,20 +33,21 @@ public class UserService {
      * @return ApiResponse<CreateUserResponse> json 반환
      */
     @Transactional
-    public ApiResponse<CreateUserResponse> createUser(CreateUserRequest request) {
+    public CreateUserResponse createUser(CreateUserRequest request) {
         // userName 중복 체크
         if (userRepository.existsByUserName(request.getUsername())) {
-            return ApiResponse.error("이미 존재하는 사용자 명입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+
         }
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
         }
 
         // 이메일 형식 체크
         if (!request.getEmail().matches(RegExp.EMAIL)) {
-            return ApiResponse.error("올바른 이메일 형식이 아닙니다.");
+            throw new CustomException(ExceptionMessageEnum.PATTERN_VALIDATION_FAILED_EXCEPTION);
         }
 
         // User 생성
@@ -62,10 +63,7 @@ public class UserService {
         // 저장
         User createdUser = userRepository.save(user);
 
-        return ApiResponse.success(
-                "회원가입이 완료되었습니다.",
-                CreateUserResponse.from(createdUser)
-        );
+        return CreateUserResponse.from(createdUser);
     }
 
     /**
@@ -112,15 +110,12 @@ public class UserService {
      * @return ApiResponse<GetUserResponse> json 반환
      */
     @Transactional(readOnly = true)
-    public ApiResponse<GetUserResponse> getUser(Long userId) {
+    public GetUserResponse getUser(Long userId) {
+        // 로그인된 아이디 확인 → 사용자 조회
         User user = userRepository.findById(userId)
-                .orElse(null);
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
-        if (user == null) {
-            return ApiResponse.error("사용자를 찾을 수 없습니다.");
-        }
-
-        return ApiResponse.success("사용자 정보 조회 성공", GetUserResponse.from(user));
+        return GetUserResponse.from(user);
     }
 
     /**
@@ -128,7 +123,7 @@ public class UserService {
      * @return List<GetUserResponse> 반환
      */
     @Transactional(readOnly = true)
-    public ApiResponse<List<GetUserResponse>> getUserList() {
+    public List<GetUserResponse> getUserList() {
         List<User> user = userRepository.findAll();
 
         List<GetUserResponse> getUserResponseList = user
@@ -136,7 +131,7 @@ public class UserService {
                 .map(u -> GetUserResponse.from(u))
                 .toList();
 
-        return ApiResponse.success("사용자 목록 조회 성공", getUserResponseList);
+        return getUserResponseList;
     }
 
     /**
@@ -146,13 +141,13 @@ public class UserService {
      * @return UpdateUserResponse json 반환
      */
     @Transactional
-    public ApiResponse<UpdateUserResponse> updateUser(Long userId, UpdateUserRequest request) {
+    public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 이메일 중복 체크 (자기 자신 제외)
         if (request.getEmail() != null && userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
-            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
         }
 
         // 이름 수정
@@ -170,7 +165,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        return ApiResponse.success("사용자 정보가 수정되었습니다.", UpdateUserResponse.from(user));
+        return UpdateUserResponse.from(user);
     }
 
     /**
@@ -182,6 +177,6 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        userRepository.delete(user);
+        user.userDelete(true);
     }
 }

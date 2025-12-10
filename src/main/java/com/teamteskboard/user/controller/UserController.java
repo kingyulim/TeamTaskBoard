@@ -103,4 +103,25 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(id, request));
     }
+
+    /**
+     * 회원탈퇴 요청 검증
+     * @param user 토큰 값 파라미터
+     * @param id 회원 고유 번호
+     * @return ApiResponse.success 반환
+     */
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @AuthenticationPrincipal SecurityUser user,
+            @PathVariable Long id
+    ) {
+        if (!user.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+        }
+
+        // 회원 삭제
+        userService.deleteUser(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("회원 탈퇴가 완료 되었습니다.", null));
+    }
 }

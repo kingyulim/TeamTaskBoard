@@ -13,7 +13,7 @@ public class CreateUserRequest {
 
     @NotBlank(message = "회원아이디가 입력되지 않았습니다.")
     @Pattern(regexp = RegExp.USERNAME)
-    private String userName;
+    private String username;
 
     @NotBlank(message = "이메일이 입력되지 않았습니다.")
     @Pattern(regexp = RegExp.EMAIL)

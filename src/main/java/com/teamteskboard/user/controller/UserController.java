@@ -4,14 +4,11 @@ import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
-import com.teamteskboard.user.dto.response.CreateUserResponse;
-import com.teamteskboard.user.dto.response.GetUserResponse;
-import com.teamteskboard.user.dto.response.LoginResponse;
-import com.teamteskboard.user.dto.response.PasswordResponse;
+import com.teamteskboard.user.dto.request.UpdateUserRequest;
+import com.teamteskboard.user.dto.response.*;
 import com.teamteskboard.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -68,14 +65,14 @@ public class UserController {
 
     /**
      * 사용자 정보 조회 요청 검증
-     * @param userId 사용자 고유 번호
+     * @param id 사용자 고유 번호
      * @return ApiResponse<GetUserResponse> 반환
      */
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
-        @PathVariable Long userId
+        @PathVariable Long id
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
     }
 
     /**
@@ -86,4 +83,20 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<GetUserResponse>>> getUserList() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserList());
     }
+
+    /**
+     * 회원정보 수정 요청 검증
+     * @param user
+     * @param id
+     * @param request
+     * @return
+     */
+    /*@PutMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<UpdateUserResponse>> updateUser(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request
+    ) {
+
+    }*/
 }

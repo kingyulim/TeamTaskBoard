@@ -20,7 +20,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class TeamService {
 
     private final TeamRepository teamRepository;
@@ -102,20 +101,13 @@ public class TeamService {
 
 
     // 팀 수정
+    @Transactional
     public UpdatedTeamResponse updateTeam(Long teamId, UpdatedTeamRequest request) {
-
-        // [임시]
-        Long currentUserId = 1L;
 
         // 1. 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
-//        // 2. 수정 권한 체크: 팀 멤버인지 확인
-//        boolean isMember = userTeamsRepository.existsByTeamIdAndUserId(teamId, currentUserId);
-//        if (!isMember) {
-//            throw new CustomException(ExceptionMessageEnum.FORBIDDEN_ACTION);
-//        }
 
         // 3. 필드 업데이트
         team.update(request.getName(), request.getDescription());

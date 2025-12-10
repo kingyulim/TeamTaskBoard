@@ -49,12 +49,12 @@ public class TeamController {
     // 팀 수정 API
     @PutMapping("/teams/{id}")
     public ResponseEntity<ApiResponse<UpdatedTeamResponse>> updateTeam(
-            @PathVariable Long Id,
+            @PathVariable Long id,
             @RequestBody UpdatedTeamRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(Id, request)));
+                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(id, request)));
     }
 
     // 팀 삭제 API

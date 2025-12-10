@@ -1,6 +1,7 @@
 package com.teamteskboard.user.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
+import com.teamteskboard.common.enums.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

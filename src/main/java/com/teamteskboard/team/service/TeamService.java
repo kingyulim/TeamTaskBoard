@@ -63,10 +63,10 @@ public class TeamService {
                     List<TeamMemberResponse> memberResponses = members.stream()
                             .map(ut -> new TeamMemberResponse(
                                     ut.getUser().getId(),
-                                    ut.getUser().getUsername(),
+                                    ut.getUser().getUserName(),
                                     ut.getUser().getName(),
                                     ut.getUser().getEmail(),
-                                    ut.getUser().getRole(),
+                                    ut.getUser().getRole().getRole(),
                                     ut.getCreatedAt()
                             ))
                             .toList();
@@ -87,10 +87,10 @@ public class TeamService {
         List<TeamMemberResponse> members = userTeams.stream()
                 .map(ut -> new TeamMemberResponse(
                         ut.getUser().getId(),
-                        ut.getUser().getUsername(),
+                        ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole(),
+                        ut.getUser().getRole().getRole(),
                         ut.getUser().getCreatedAt()
                 ))
                 .toList();
@@ -119,10 +119,10 @@ public class TeamService {
         List<TeamMemberResponse> memberResponses = members.stream()
                 .map(ut -> new TeamMemberResponse(
                         ut.getUser().getId(),
-                        ut.getUser().getUsername(),
+                        ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole(),
+                        ut.getUser().getRole().getRole(),
                         ut.getCreatedAt()
                 ))
                 .toList();
@@ -177,10 +177,10 @@ public class TeamService {
         List<TeamMemberResponse> members = teamUsers.stream()
                 .map(ut -> new TeamMemberResponse(
                         ut.getUser().getId(),
-                        ut.getUser().getUsername(),
+                        ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole(),
+                        ut.getUser().getRole().getRole(),
                         ut.getUser().getCreatedAt()
                 ))
                 .toList();
@@ -202,10 +202,10 @@ public class TeamService {
                     User user = ut.getUser();
                     return new TeamMemberResponse(
                             user.getId(),
-                            user.getUsername(),
+                            user.getUserName(),
                             user.getName(),
                             user.getEmail(),
-                            user.getRole(),
+                            user.getRole().getRole(),
                             user.getCreatedAt()
                     );
                 })

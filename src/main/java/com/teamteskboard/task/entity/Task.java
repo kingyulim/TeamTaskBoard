@@ -1,6 +1,10 @@
 package com.teamteskboard.task.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
+import com.teamteskboard.task.dto.request.UpdateTaskRequest;
+import com.teamteskboard.task.dto.request.UpdateTaskStatusRequest;
+import com.teamteskboard.task.enums.TaskPriorityEnum;
+import com.teamteskboard.task.enums.TaskStatusEnum;
 import com.teamteskboard.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,12 +23,12 @@ public class Task extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(
+    @ManyToOne(                     // 이 부분 줄바꿈 유지?
         fetch = FetchType.LAZY,
         optional = false
     )
     @JoinColumn(name = "assignee_id")
-    private User assigneeId;
+    private User assignee; //assignee
 
     @Column(length = 20, nullable = false)
     private String title;
@@ -32,24 +36,43 @@ public class Task extends BaseTimeEntity {
     @Column(length = 250, nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private String status = "TODO";
+    private TaskStatusEnum status = TaskStatusEnum.TODO;  // 최초 생성 시 기본값
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private String priority;
+    private TaskPriorityEnum priority;
 
     @Column(nullable = false)
-    private LocalDateTime dueDatetime;
+    private LocalDateTime dueDate; // dueDatetime -> dueDate 이름 수정
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
     // 생성자
-    public Task(String title, String description, String status, String priority, User assigneeId, LocalDateTime dueDatetime) {
+    public Task(String title, String description, TaskPriorityEnum priority, User assignee, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
-        this.status = status;
         this.priority = priority;
-        this.assigneeId = assigneeId;
+        this.assignee = assignee;
+        this.dueDate = dueDate;
+    }
+
+    public void update(UpdateTaskRequest request) {
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.status = TaskStatusEnum.valueOf(request.getStatus());
+        this.priority = request.getPriority();
+        this.dueDate = request.getDueDate();
+
+    }
+
+    public void updateStatus(UpdateTaskStatusRequest request) {
+        this.status = request.getStatus();
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }

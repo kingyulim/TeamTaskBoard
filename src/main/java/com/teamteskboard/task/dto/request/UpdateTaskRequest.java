@@ -18,9 +18,6 @@ public class UpdateTaskRequest {
     @NotBlank
     private String description;
 
-    @NotBlank
-    private String status;
-
     @NotNull
     private TaskPriorityEnum priority;
 

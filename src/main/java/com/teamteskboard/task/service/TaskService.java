@@ -15,9 +15,7 @@ import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +49,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public GetTaskResponse getTask(Long taskId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         return GetTaskResponse.from(task);
@@ -60,28 +58,22 @@ public class TaskService {
     // 전체 조회
     @Transactional(readOnly = true)
     public Page<GetTaskResponse> getAllTasks(
-            int page,
-            int size,
             TaskStatusEnum status,
             String search,
-            Long assigneeId
+            Long assigneeId,
+            Pageable pageable
     ) {
+        Page<Task> tasks = taskRepository.findTasks(status, assigneeId, search, pageable);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
-
-        Page<Task> tasks = taskRepository.findTasks(status, assigneeId, search,pageable);
-
-        Page<GetTaskResponse> response = tasks.map(GetTaskResponse::from);
-
-        return response;
-
+        return tasks.map(GetTaskResponse::from);
     }
+
 
     // 작업 수정
     @Transactional
     public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         // 작업의 담당자와 로그인한 사용자가 같은지 확인
@@ -104,7 +96,7 @@ public class TaskService {
     @Transactional
     public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         if(!userId.equals(task.getAssignee().getId())) {
@@ -129,7 +121,7 @@ public class TaskService {
     @Transactional
     public void deleteTask(Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         if(!userId.equals(task.getAssignee().getId())) {

@@ -45,13 +45,13 @@ public class UserService {
     public CreateUserResponse createUser(CreateUserRequest request) {
         // userName 중복 체크
         if (userRepository.existsByUserName(request.getUsername())) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_USERNAME);
 
         }
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
         }
 
         // 이메일 형식 체크
@@ -104,7 +104,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public PasswordResponse verifyPassword(Long id, PasswordRequest request) {
         // 로그인된 아이디 확인 → 사용자 조회
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
@@ -120,8 +120,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetUserResponse getUser(Long userId) {
         // 로그인된 아이디 확인 → 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_MEMBER_INFO));
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_USER_ID));
 
         return GetUserResponse.from(user);
     }
@@ -150,18 +150,22 @@ public class UserService {
      */
     @Transactional
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_USER_ID));
 
         // 이메일 중복 체크 (자기 자신 제외)
         if (request.getEmail() != null && userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
+        }
+
+        // 내 정보의 비밀번호가 맞는지 확인
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ExceptionMessageEnum.INVALID_MEMBER_INFO);
         }
 
         user.userUpdate(
                 request.getName(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
+                request.getEmail()
         );
 
         return UpdateUserResponse.from(user);
@@ -173,8 +177,8 @@ public class UserService {
      */
     @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_USER_ID));
 
         user.userDelete(true);
     }

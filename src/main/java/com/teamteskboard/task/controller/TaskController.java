@@ -13,6 +13,9 @@ import com.teamteskboard.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,10 +33,8 @@ public class TaskController {
             @Valid @RequestBody CreateTaskRequest request ) {
 
         CreateTaskResponse response = taskService.saveTask(request);
-        ApiResponse<CreateTaskResponse> result =
-                ApiResponse.success("작업이 생성되었습니다.", response);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("작업이 생성되었습니다.", response));
     }
 
     // 단건 조회
@@ -41,10 +42,8 @@ public class TaskController {
     public ResponseEntity<ApiResponse<GetTaskResponse>> getTask(@PathVariable Long id) {
 
         GetTaskResponse response = taskService.getTask(id);
-        ApiResponse<GetTaskResponse> result =
-                ApiResponse.success("작업 조회 성공", response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 조회 성공", response));
     }
 
     // 전체 조회
@@ -56,15 +55,14 @@ public class TaskController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long assigneeId
     ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
 
         Page<GetTaskResponse> response =
-                taskService.getAllTasks(page, size, status, search, assigneeId);
+                taskService.getAllTasks(status, search, assigneeId, pageable);
 
-        ApiResponse<Page<GetTaskResponse>> result =
-                ApiResponse.success("작업 목록 조회 성공", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 목록 조회 성공", response));
     }
+
 
     // 수정
     @PutMapping("/api/tasks/{id}")
@@ -76,10 +74,7 @@ public class TaskController {
         UpdateTaskResponse response =
                 taskService.updateTask(request, id, user.getId());
 
-        ApiResponse<UpdateTaskResponse> result =
-                ApiResponse.success("작업이 수정되었습니다.", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 수정되었습니다.", response));
     }
 
     // 상태 수정
@@ -92,10 +87,7 @@ public class TaskController {
         UpdateTaskResponse response =
                 taskService.updateTaskStatus(request, id, user.getId());
 
-        ApiResponse<UpdateTaskResponse> result =
-                ApiResponse.success("작업 상태가 변경되었습니다.", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 상태가 변경되었습니다.", response));
     }
 
     // 삭제
@@ -106,9 +98,6 @@ public class TaskController {
 
         taskService.deleteTask(id, user.getId());
 
-        ApiResponse<Void> result =
-                ApiResponse.success("작업이 삭제되었습니다.", null);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 삭제되었습니다.", null));
     }
 }

@@ -51,7 +51,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public GetTaskResponse getTask(Long taskId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         return GetTaskResponse.from(task);
@@ -81,7 +81,7 @@ public class TaskService {
     @Transactional
     public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         // 작업의 담당자와 로그인한 사용자가 같은지 확인
@@ -104,7 +104,7 @@ public class TaskService {
     @Transactional
     public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         if(!userId.equals(task.getAssignee().getId())) {
@@ -129,7 +129,7 @@ public class TaskService {
     @Transactional
     public void deleteTask(Long taskId, Long userId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
         if(!userId.equals(task.getAssignee().getId())) {

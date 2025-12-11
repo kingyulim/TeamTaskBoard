@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @EntityGraph(attributePaths = {"assignee"})
-    Optional<Task> findById(Long taskId);
+    Optional<Task> findByIdAndIsDeletedFalse(Long taskId);
 
     @EntityGraph(attributePaths = {"assignee"})
     @Query("""

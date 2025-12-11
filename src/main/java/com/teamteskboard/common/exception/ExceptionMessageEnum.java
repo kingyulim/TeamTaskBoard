@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Date;
+
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionMessageEnum {
@@ -12,7 +14,16 @@ public enum ExceptionMessageEnum {
     TASK_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "해당 작업 수정 권한이 없습니다."),
     INVALID_TASK_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 값입니다"),
 
+    USER_SAME_ACOUNT(HttpStatus.BAD_REQUEST, "중복되는 데이터가 존재합니다."),
+
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
+
+    //댓글
+    NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "해당 작업물을 찾을 수 없습니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
+
+
     NO_MEMBER_ID(HttpStatus.NOT_FOUND, "해당 ID의 회원을 찾을 수 없습니다."),
     NO_MEMBER_INFO(HttpStatus.NOT_FOUND, "해당 회원 정보를 찾을 수 없습니다."),
     LOGIN_CHECK(HttpStatus.UNAUTHORIZED, "로그인이 되어있습니다."),
@@ -40,6 +51,7 @@ public enum ExceptionMessageEnum {
     TEAM_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 팀에 속한 멤버입니다."),
     TEAM_DELETE_HAS_MEMBERS(HttpStatus.CONFLICT, "팀에 멤버가 존재하여 삭제할 수 없습니다."),
     FORBIDDEN_ACTION(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    ;
 
     private final HttpStatus status;
     private final String message;

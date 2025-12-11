@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @Entity
 @Getter
@@ -16,30 +17,50 @@ public class Comment extends BaseTimeEntity {
     // 속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
     @JoinColumn(name = "task_id")
-    private Task task_id;
+    private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User user;
 
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long parentId;
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
     // 생성자
-    public  Comment(User user_id, Task task_id, String content, Long parentId) {
-        this.user_id = user_id;
-        this.task_id = task_id;
+    public  Comment(User user, Task task, String content, Long parentId) {
+        this.user = user;
+        this.task = task;
         this.content = content;
         this.parentId = parentId;
     }
+
+    //기능
+    public void commentUpdate(String content) {
+        this.content = content;
+    }
+
+    public void getIsDelete(){
+        this.isDeleted = true;
+    }
+
+
 }

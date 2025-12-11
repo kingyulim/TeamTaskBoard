@@ -6,11 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
@@ -39,12 +37,33 @@ public class User extends BaseTimeEntity {
     private Boolean isDeleted = false;
 
     // 생성자
-    public User(String name, String userName, String email, String password) {
+    public User(String name, String userName, String email, String password, UserRoleEnum role) {
         this.name = name;
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     // 기능
+
+    /**
+     * 회원 삭제 기능 메서드
+     * @param isDelete 회원 탈퇴 삭제 매개변수
+     */
+    public void userDelete(Boolean isDelete) {
+        this.isDeleted = isDelete;
+    }
+
+    /**
+     * 회원 업데이트 기능 메서드
+     * @param name 회원 이름
+     * @param email 회원 이메일
+     * @param password 회원 비밀번호
+     */
+    public void userUpdate(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 }

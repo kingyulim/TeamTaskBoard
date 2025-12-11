@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @EntityGraph(attributePaths = {"assignee"})
-    Optional<Task> findByIdAndIsDeletedFalse(Long taskId);
+    Optional<Task> findById(Long taskId);
 
     @EntityGraph(attributePaths = {"assignee"})
     @Query("""
@@ -36,6 +36,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             Pageable pageable
     );
 
+    Optional<Task> findByIdAndIsDeletedFalse(Long taskId);
     @Query("SELECT COUNT(t) FROM Task t WHERE t.isDeleted = false")
     int countAll();
 

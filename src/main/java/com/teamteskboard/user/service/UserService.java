@@ -7,6 +7,11 @@ import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.common.utils.JwtUtil;
+import com.teamteskboard.team.dto.response.TeamMemberResponse;
+import com.teamteskboard.team.entity.Team;
+import com.teamteskboard.team.entity.UserTeams;
+import com.teamteskboard.team.repository.TeamRepository;
+import com.teamteskboard.team.repository.UserTeamsRepository;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -19,11 +24,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
+    private final UserTeamsRepository userTeamsRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -33,20 +42,21 @@ public class UserService {
      * @return ApiResponse<CreateUserResponse> json 반환
      */
     @Transactional
-    public ApiResponse<CreateUserResponse> createUser(CreateUserRequest request) {
+    public CreateUserResponse createUser(CreateUserRequest request) {
         // userName 중복 체크
         if (userRepository.existsByUserName(request.getUsername())) {
-            return ApiResponse.error("이미 존재하는 사용자 명입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+
         }
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
         }
 
         // 이메일 형식 체크
         if (!request.getEmail().matches(RegExp.EMAIL)) {
-            return ApiResponse.error("올바른 이메일 형식이 아닙니다.");
+            throw new CustomException(ExceptionMessageEnum.PATTERN_VALIDATION_FAILED_EXCEPTION);
         }
 
         // User 생성
@@ -54,18 +64,14 @@ public class UserService {
                 request.getName(),
                 request.getUsername(),
                 request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
+                passwordEncoder.encode(request.getPassword()),
+                UserRoleEnum.USER
         );
-
-        user.setRole(UserRoleEnum.USER);
 
         // 저장
         User createdUser = userRepository.save(user);
 
-        return ApiResponse.success(
-                "회원가입이 완료되었습니다.",
-                CreateUserResponse.from(createdUser)
-        );
+        return CreateUserResponse.from(createdUser);
     }
 
     /**
@@ -74,7 +80,7 @@ public class UserService {
      * @return 로그인 응답 DTO (토큰)
      */
     @Transactional(readOnly = true)
-    public ApiResponse<LoginResponse> login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         // 아이디 확인 → 사용자 조회
         User user = userRepository.findByUserName(request.getUsername())
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
@@ -86,24 +92,24 @@ public class UserService {
         // 토큰 생성
         String token = jwtUtil.generateToken(user.getId(), user.getUserName(), user.getRole());
 
-        return ApiResponse.success("로그인 성공", LoginResponse.from(token));
+        return LoginResponse.from(token);
     }
 
     /**
      * 비밀번호 확인
-     * @param id 로그인한 사용자 아이디
+     * @param id 로그인한 유저 ID
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
     @Transactional(readOnly = true)
-    public ApiResponse<PasswordResponse> verifyPassword(Long id, PasswordRequest request) {
+    public PasswordResponse verifyPassword(Long id, PasswordRequest request) {
         // 로그인된 아이디 확인 → 사용자 조회
         User user = userRepository.findById(id)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
         boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        return ApiResponse.success("비밀번호가 확인되었습니다.", PasswordResponse.from(valid));
+        return PasswordResponse.from(valid);
     }
 
     /**
@@ -112,15 +118,12 @@ public class UserService {
      * @return ApiResponse<GetUserResponse> json 반환
      */
     @Transactional(readOnly = true)
-    public ApiResponse<GetUserResponse> getUser(Long userId) {
+    public GetUserResponse getUser(Long userId) {
+        // 로그인된 아이디 확인 → 사용자 조회
         User user = userRepository.findById(userId)
-                .orElse(null);
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_MEMBER_INFO));
 
-        if (user == null) {
-            return ApiResponse.error("사용자를 찾을 수 없습니다.");
-        }
-
-        return ApiResponse.success("사용자 정보 조회 성공", GetUserResponse.from(user));
+        return GetUserResponse.from(user);
     }
 
     /**
@@ -128,7 +131,7 @@ public class UserService {
      * @return List<GetUserResponse> 반환
      */
     @Transactional(readOnly = true)
-    public ApiResponse<List<GetUserResponse>> getUserList() {
+    public List<GetUserResponse> getUserList() {
         List<User> user = userRepository.findAll();
 
         List<GetUserResponse> getUserResponseList = user
@@ -136,7 +139,7 @@ public class UserService {
                 .map(u -> GetUserResponse.from(u))
                 .toList();
 
-        return ApiResponse.success("사용자 목록 조회 성공", getUserResponseList);
+        return getUserResponseList;
     }
 
     /**
@@ -146,31 +149,22 @@ public class UserService {
      * @return UpdateUserResponse json 반환
      */
     @Transactional
-    public ApiResponse<UpdateUserResponse> updateUser(Long userId, UpdateUserRequest request) {
+    public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 이메일 중복 체크 (자기 자신 제외)
         if (request.getEmail() != null && userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
-            return ApiResponse.error("이미 사용 중인 이메일입니다.");
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
         }
 
-        // 이름 수정
-        if (request.getName() != null) {
-            user.setName(request.getName());
-        }
+        user.userUpdate(
+                request.getName(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword())
+        );
 
-        // 이메일 수정
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
-        }
-
-        // 비밀번호 수정
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-
-        return ApiResponse.success("사용자 정보가 수정되었습니다.", UpdateUserResponse.from(user));
+        return UpdateUserResponse.from(user);
     }
 
     /**
@@ -182,6 +176,42 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        userRepository.delete(user);
+        user.userDelete(true);
+    }
+
+    /**
+     * 추가 가능한 사용자 목록 조회 비지니스 로직 처리
+     * @param teamId 팀 고유 번호
+     * @return TeamMemberResponse list json 반환
+     */
+    @Transactional(readOnly = true)
+    public List<TeamMemberResponse> addTeamUser(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        // 회원정보 전체
+        List<User> users = userRepository.findAll();
+
+        // 내가 입력한 팀 정보 전체
+        List<UserTeams> userTeams = userTeamsRepository.findAllByTeam(team);
+
+        // 내가 입력한 팀의 모든 id 정보 가져오기
+        Set<Long> userIds = userTeams
+                .stream()
+                .map(u -> u.getUser().getId())
+                .collect(Collectors.toSet());
+
+        return users
+                .stream()
+                .filter(t -> !userIds.contains(t.getId()))
+                .map(u -> new TeamMemberResponse(
+                        u.getId(),
+                        u.getUserName(),
+                        u.getName(),
+                        u.getEmail(),
+                        u.getRole().name(),
+                        u.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 }

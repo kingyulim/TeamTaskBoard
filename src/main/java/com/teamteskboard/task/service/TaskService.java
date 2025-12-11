@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
+
 import static com.teamteskboard.common.exception.ExceptionMessageEnum.*;
 
 @Service
@@ -37,7 +39,13 @@ public class TaskService {
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
-        Task task = new Task(request.getTitle(), request.getDescription(), request.getPriority(), assignee, request.getDueDate());
+        LocalDateTime dueDate = request.getDueDate();
+
+        if(dueDate == null) {
+            dueDate = LocalDateTime.now().plusDays(7);
+        }
+
+        Task task = new Task(request.getTitle(), request.getDescription(), request.getPriority(), assignee, dueDate);
 
         taskRepository.save(task);
 

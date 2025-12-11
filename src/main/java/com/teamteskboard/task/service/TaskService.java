@@ -39,6 +39,7 @@ public class TaskService {
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
+        // 마감일이 null이면 7일 후로 설정
         LocalDateTime dueDate = request.getDueDate();
 
         if(dueDate == null) {

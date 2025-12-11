@@ -31,17 +31,18 @@ public class User extends BaseTimeEntity {
 
     @Column(length = 20, nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private UserRoleEnum role = UserRoleEnum.USER;
+    private UserRoleEnum role;
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
     // 생성자
-    public User(String name, String userName, String email, String password) {
+    public User(String name, String userName, String email, String password, UserRoleEnum role) {
         this.name = name;
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     // 기능

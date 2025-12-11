@@ -66,7 +66,7 @@ public class TeamService {
                                     ut.getUser().getUserName(),
                                     ut.getUser().getName(),
                                     ut.getUser().getEmail(),
-                                    ut.getUser().getRole().getRole(),
+                                    ut.getUser().getRole().name(),
                                     ut.getCreatedAt()
                             ))
                             .toList();
@@ -90,7 +90,7 @@ public class TeamService {
                         ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole().getRole(),
+                        ut.getUser().getRole().name(),
                         ut.getUser().getCreatedAt()
                 ))
                 .toList();
@@ -122,7 +122,7 @@ public class TeamService {
                         ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole().getRole(),
+                        ut.getUser().getRole().name(),
                         ut.getCreatedAt()
                 ))
                 .toList();
@@ -180,7 +180,7 @@ public class TeamService {
                         ut.getUser().getUserName(),
                         ut.getUser().getName(),
                         ut.getUser().getEmail(),
-                        ut.getUser().getRole().getRole(),
+                        ut.getUser().getRole().name(),
                         ut.getUser().getCreatedAt()
                 ))
                 .toList();
@@ -205,7 +205,7 @@ public class TeamService {
                             user.getUserName(),
                             user.getName(),
                             user.getEmail(),
-                            user.getRole().getRole(),
+                            user.getRole().name(),
                             user.getCreatedAt()
                     );
                 })

@@ -2,6 +2,7 @@ package com.teamteskboard.user.controller;
 
 import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
+import com.teamteskboard.team.dto.response.TeamMemberResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -159,6 +160,22 @@ public class UserController {
         // 회원 삭제
         userService.deleteUser(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("회원 탈퇴가 완료 되었습니다.", null));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("회원 탈퇴가 완료 되었습니다.", null));
+    }
+
+    /**
+     * 추가 가능한 사용자 목록 조회 요청 검증
+     * @param teamId 팀 고유 번호 파라미터
+     * @return TeamMemberResponse list 형태 반환
+     */
+    @GetMapping("/users/available")
+    public ResponseEntity<ApiResponse<List<TeamMemberResponse>>> getUserAvailable(
+            @RequestParam(required = false) Long teamId
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("추가 가능한 사용자 목록 조회 성공", userService.addTeamUser(teamId)));
     }
 }

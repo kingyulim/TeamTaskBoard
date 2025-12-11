@@ -27,4 +27,10 @@ public class Team extends BaseTimeEntity {
         this.name = name;
         this.description = description;
     }
+
+    // 기능
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

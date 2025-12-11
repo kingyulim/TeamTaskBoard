@@ -1,5 +1,6 @@
 package com.teamteskboard.common.exception;
 
+import com.teamteskboard.common.dto.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,41 +17,24 @@ import java.util.Map;
 @AllArgsConstructor
 public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ExceptionResponse> handleCustomException(CustomException e) {
+    public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
         log.error("CustomException 발생: {}", e.getMessage());
 
         return ResponseEntity
                 .status(e.getExceptionMessage().getStatus())
-                .body(
-                        new ExceptionResponse(
-                                e.getExceptionMessage().getStatus().value(),
-                                e.getExceptionMessage().name(),
-                                e.getMessage()
-                        )
-                );
+                .body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.error("유효성 검증 예외 발생: {}", ex.getMessage());
 
-        // 필드별 에러 메시지를 담을 Map
         Map<String, String> fieldErrors = new HashMap<>();
-        ex.getBindingResult()
-                .getFieldErrors()
-                .forEach(error ->
-                        fieldErrors.put(error.getField(), error.getDefaultMessage())
-                );
-
-        // 응답 전체 구조를 담을 Map
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("code", "VALIDATION_ERROR");
-        body.put("message", "입력값이 유효하지 않습니다.");
-        body.put("errors", fieldErrors);
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(body);
+                .body(ApiResponse.error("입력값이 유효하지 않습니다.", fieldErrors));
     }
 }

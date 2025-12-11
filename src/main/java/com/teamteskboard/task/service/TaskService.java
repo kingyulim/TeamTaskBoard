@@ -1,6 +1,5 @@
 package com.teamteskboard.task.service;
 
-import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.task.dto.request.CreateTaskRequest;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;
@@ -37,7 +36,7 @@ public class TaskService {
     @Transactional
     public CreateTaskResponse saveTask(CreateTaskRequest request) {
 
-        User assignee = userRepository.findById(request.getAssigneeId())
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
         Task task = new Task(request.getTitle(), request.getDescription(), request.getPriority(), assignee, request.getDueDate());
@@ -55,7 +54,6 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
-        //return ApiResponse.success("작업 조회 성공", GetTaskResponse.fromDetail(task));
         return GetTaskResponse.from(task);
     }
 
@@ -75,7 +73,6 @@ public class TaskService {
 
         Page<GetTaskResponse> response = tasks.map(GetTaskResponse::from);
 
-        //return ApiResponse.success("작업 목록 조회 성공", response);
         return response;
 
     }
@@ -92,9 +89,12 @@ public class TaskService {
             throw new CustomException(TASK_ACCESS_DENIED);
         }
 
-        task.update(request);
+        User updatedAssignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
+                .orElseThrow(() -> new CustomException(NO_USER_ID));
 
-        Task updatedTask = taskRepository.save(task);
+        task.update(request, updatedAssignee);
+
+        Task updatedTask = taskRepository.saveAndFlush(task);
 
         return UpdateTaskResponse.from(updatedTask);
 

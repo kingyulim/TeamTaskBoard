@@ -25,4 +25,28 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
                                   @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     List<Activity> findAllByUser(User user);
+
+    // 특정 날짜에 생성된 작업 개수
+    @Query("""
+    SELECT COUNT(a)
+    FROM Activity a
+    WHERE a.type = :type
+        AND a.createdAt BETWEEN :start AND :end
+        AND a.task.isDeleted = false
+    """)
+    int countCreatedTasksByDate(@Param("type") ActivityTypeEnum type,
+                                @Param("start") LocalDateTime start,
+                                @Param("end") LocalDateTime end);
+
+    // 특정 날짜에 완료된 작업 개수
+    @Query("""
+    SELECT COUNT(a)
+    FROM Activity a
+    WHERE a.type = :type
+        AND a.description LIKE CONCAT('%', :doneKeyword, '%')
+        AND a.createdAt BETWEEN :start AND :end
+        AND a.task.status = 'DONE'
+        AND a.task.isDeleted = false
+    """)
+    int countCompletedTasksByDate(@Param("type") ActivityTypeEnum type, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("doneKeyword") String doneKeyword);
 }

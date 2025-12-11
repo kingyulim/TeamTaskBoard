@@ -13,6 +13,7 @@ public enum ExceptionMessageEnum {
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 작업을 찾을 수 없습니다."),
     TASK_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "해당 작업 수정 권한이 없습니다."),
     INVALID_TASK_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 값입니다"),
+    NULL_TITLE_ASSIGNEE(HttpStatus.BAD_REQUEST, "제목과 작성자는 필수입니다."),
 
     USER_SAME_ACOUNT(HttpStatus.BAD_REQUEST, "중복되는 데이터가 존재합니다."),
 

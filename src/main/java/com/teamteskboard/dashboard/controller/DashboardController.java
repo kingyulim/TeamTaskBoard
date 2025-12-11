@@ -4,6 +4,7 @@ import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.dashboard.dto.response.GetDashboardStatsResponse;
 import com.teamteskboard.dashboard.dto.response.GetMyDashboardResponse;
+import com.teamteskboard.dashboard.dto.response.GetWeeklyDashboardResponse;
 import com.teamteskboard.dashboard.service.DashboardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -26,7 +29,9 @@ public class DashboardController {
 
         GetDashboardStatsResponse response = dashboardService.getDashboardStats(user.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("대시보드 통계 조회 성공", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("대시보드 통계 조회 성공", response));
     }
 
     @GetMapping("/tasks")
@@ -35,8 +40,20 @@ public class DashboardController {
 
         GetMyDashboardResponse response = dashboardService.getMyDashboard(user.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("내 작업 요약 조회 성공", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("내 작업 요약 조회 성공", response));
 
+    }
+
+    @GetMapping("/weekly-trend")
+    public ResponseEntity<ApiResponse<List<GetWeeklyDashboardResponse>>> getWeeklyTrend() {
+
+        List<GetWeeklyDashboardResponse> response = dashboardService.getWeeklyDashboard();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("주간 작업 추세 조회 성공", response));
     }
 
 

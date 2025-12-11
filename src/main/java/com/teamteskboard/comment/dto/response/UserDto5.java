@@ -18,10 +18,10 @@ public class UserDto5 {
     public static UserDto5 from(User user) {
         return new UserDto5(
                 user.getId(),
-                user.getUsername(),
+                user.getUserName(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole().getRole()
         );
     }
 }

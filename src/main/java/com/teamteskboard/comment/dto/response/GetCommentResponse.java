@@ -33,10 +33,10 @@ public class GetCommentResponse {
         User user = comment.getUser();
         UserDto5 userDto5 = new UserDto5(
                 user.getId(),
-                user.getUsername(),
+                user.getUserName(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole());
+                user.getRole().getRole());
 
         return new GetCommentResponse(
                 comment.getId(),

@@ -8,9 +8,10 @@ import com.teamteskboard.comment.repository.CommentRepository;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.task.entity.Task;
-import com.teamteskboard.task.entity.repository.TaskRepository;
+
+import com.teamteskboard.task.repository.TaskRepository;
 import com.teamteskboard.user.entity.User;
-import com.teamteskboard.user.entity.repository.UserRepository;
+import com.teamteskboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,12 +36,13 @@ public class CommentService {
     @Transactional
     public CreatedCommentResponse save(Long taskId, Long userId, CreatedCommentRequest request) {
 
-        //태그크 아이디 조회
-        Task task = taskRepository.findById(taskId)
+
+        //태스크 아이디 조회
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
 
         //유저 아이디 조회
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
         //부모 아이디 조회 및 여부
@@ -48,7 +50,7 @@ public class CommentService {
 
         //parentId가 존재할 경우
         if (parentId != null) {
-            Comment parent = commentRepository.findById(parentId)
+            Comment parent = commentRepository.findByIdAndIsDeletedFalse(parentId)
                     .orElseThrow(() -> new CustomException(NOT_FOUND_COMMENT));
 
             //parentId의 TaskId가 다를 경우 존재하지 않을 경우
@@ -86,7 +88,7 @@ public class CommentService {
     //삭제
     @Transactional
     public void Delete(Long userId, Long commentId){
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_COMMENT)
                 );
 

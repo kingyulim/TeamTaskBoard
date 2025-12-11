@@ -1,5 +1,6 @@
 package com.teamteskboard.comment.dto;
 
+import com.teamteskboard.comment.dto.response.UserDto;
 import com.teamteskboard.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

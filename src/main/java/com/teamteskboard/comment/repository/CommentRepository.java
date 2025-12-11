@@ -17,4 +17,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
     Optional<Comment> findByIdAndTaskIdAndIsDeletedFalse(Long id, Long taskId);
+
+    Optional<Comment> findByIdAndIsDeletedFalse(Long parentId);
 }

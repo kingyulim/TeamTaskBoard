@@ -35,4 +35,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             Pageable pageable
     );
 
+    Optional<Task> findByIdAndIsDeletedFalse(Long taskId);
 }

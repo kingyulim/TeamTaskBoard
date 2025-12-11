@@ -2,7 +2,10 @@ package com.teamteskboard.user.repository;
 
 import com.teamteskboard.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -19,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUserName(String email);
 
     Boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM User u WHERE u.name LIKE %:keyword% OR u.userName LIKE %:keyword%")
+    List<User> findByKeyword(@Param("keyword") String keyword);
 }

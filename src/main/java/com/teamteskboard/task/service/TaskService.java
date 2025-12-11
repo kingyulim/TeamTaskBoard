@@ -1,6 +1,5 @@
 package com.teamteskboard.task.service;
 
-import com.teamteskboard.common.dto.response.ApiResponse;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.task.dto.request.CreateTaskRequest;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;
@@ -35,32 +34,32 @@ public class TaskService {
 
     // 태스크 생성
     @Transactional
-    public ApiResponse<CreateTaskResponse> saveTask(CreateTaskRequest request) {
+    public CreateTaskResponse saveTask(CreateTaskRequest request) {
 
-        User assignee = userRepository.findById(request.getAssigneeId())
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
         Task task = new Task(request.getTitle(), request.getDescription(), request.getPriority(), assignee, request.getDueDate());
 
         taskRepository.save(task);
 
-        return ApiResponse.success("작업이 생성되었습니다.", CreateTaskResponse.from(task));
+        return CreateTaskResponse.from(task);
     }
 
 
     // 단건 조회
     @Transactional(readOnly = true)
-    public ApiResponse<GetTaskResponse> getTask(Long taskId) {
+    public GetTaskResponse getTask(Long taskId) {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
-        return ApiResponse.success("작업 조회 성공", GetTaskResponse.fromDetail(task));
+        return GetTaskResponse.from(task);
     }
 
     // 전체 조회
     @Transactional(readOnly = true)
-    public ApiResponse<Page<GetTaskResponse>> getAllTasks(
+    public Page<GetTaskResponse> getAllTasks(
             int page,
             int size,
             TaskStatusEnum status,
@@ -74,13 +73,13 @@ public class TaskService {
 
         Page<GetTaskResponse> response = tasks.map(GetTaskResponse::from);
 
-        return ApiResponse.success("작업 목록 조회 성공", response);
+        return response;
 
     }
 
     // 작업 수정
     @Transactional
-    public ApiResponse<UpdateTaskResponse> updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
+    public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
@@ -90,17 +89,20 @@ public class TaskService {
             throw new CustomException(TASK_ACCESS_DENIED);
         }
 
-        task.update(request);
+        User updatedAssignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
+                .orElseThrow(() -> new CustomException(NO_USER_ID));
 
-        Task updatedTask = taskRepository.save(task);
+        task.update(request, updatedAssignee);
 
-        return ApiResponse.success("작업이 수정되었습니다.", UpdateTaskResponse.from(updatedTask));
+        Task updatedTask = taskRepository.saveAndFlush(task);
+
+        return UpdateTaskResponse.from(updatedTask);
 
     }
     
     // 작업 상태 수정
     @Transactional
-    public ApiResponse<UpdateTaskResponse> updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
+    public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
@@ -120,13 +122,12 @@ public class TaskService {
 
         Task updatedTask = taskRepository.save(task);
 
-        return ApiResponse.success("작업 상태가 변경되었습니다.", UpdateTaskResponse.from(updatedTask));
-
+        return UpdateTaskResponse.from(updatedTask);
     }
 
     //삭제(soft delete)
     @Transactional
-    public ApiResponse<Void> deleteTask(Long taskId, Long userId) {
+    public void deleteTask(Long taskId, Long userId) {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
@@ -136,8 +137,6 @@ public class TaskService {
         }
 
         task.softDelete();
-
-        return ApiResponse.success("작업이 삭제되었습니다.", null);
     }
 
 

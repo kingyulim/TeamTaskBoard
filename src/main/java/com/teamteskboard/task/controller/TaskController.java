@@ -13,6 +13,7 @@ import com.teamteskboard.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,22 @@ public class TaskController {
     public ResponseEntity<ApiResponse<CreateTaskResponse>> createTask(
             @Valid @RequestBody CreateTaskRequest request ) {
 
-        return ResponseEntity.ok(taskService.saveTask(request));
+        CreateTaskResponse response = taskService.saveTask(request);
+        ApiResponse<CreateTaskResponse> result =
+                ApiResponse.success("작업이 생성되었습니다.", response);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     // 단건 조회
     @GetMapping("/api/tasks/{id}")
     public ResponseEntity<ApiResponse<GetTaskResponse>> getTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getTask(id));
+
+        GetTaskResponse response = taskService.getTask(id);
+        ApiResponse<GetTaskResponse> result =
+                ApiResponse.success("작업 조회 성공", response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 전체 조회
@@ -46,7 +56,14 @@ public class TaskController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long assigneeId
     ) {
-        return ResponseEntity.ok(taskService.getAllTasks(page, size, status, search, assigneeId));
+
+        Page<GetTaskResponse> response =
+                taskService.getAllTasks(page, size, status, search, assigneeId);
+
+        ApiResponse<Page<GetTaskResponse>> result =
+                ApiResponse.success("작업 목록 조회 성공", response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 수정
@@ -56,7 +73,13 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequest request,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.updateTask(request, id, user.getId()));
+        UpdateTaskResponse response =
+                taskService.updateTask(request, id, user.getId());
+
+        ApiResponse<UpdateTaskResponse> result =
+                ApiResponse.success("작업이 수정되었습니다.", response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 상태 수정
@@ -66,7 +89,13 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskStatusRequest request,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.updateTaskStatus(request, id, user.getId()));
+        UpdateTaskResponse response =
+                taskService.updateTaskStatus(request, id, user.getId());
+
+        ApiResponse<UpdateTaskResponse> result =
+                ApiResponse.success("작업 상태가 변경되었습니다.", response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 삭제
@@ -75,8 +104,11 @@ public class TaskController {
             @AuthenticationPrincipal SecurityUser user,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(taskService.deleteTask(id, user.getId()));
+        taskService.deleteTask(id, user.getId());
+
+        ApiResponse<Void> result =
+                ApiResponse.success("작업이 삭제되었습니다.", null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-
 }

@@ -33,8 +33,13 @@ public enum ExceptionMessageEnum {
     NOT_FRIEND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 유저는 친구가 아닙니다."),
     COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
     COMMENT_ACCESS_DENIED_EXCEPTION(HttpStatus.UNAUTHORIZED, "댓글 수정/삭제 권한이 없습니다."),
-    NULL_POINT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력란이 비어있습니다.")
-    ;
+    NULL_POINT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력란이 비어있습니다."),
+    TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다."),
+    TEAM_NAME_DUPLICATE(HttpStatus.CONFLICT, "이미 존재하는 팀 이름입니다."),
+    TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "팀 멤버를 찾을 수 없습니다."),
+    TEAM_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 팀에 속한 멤버입니다."),
+    TEAM_DELETE_HAS_MEMBERS(HttpStatus.CONFLICT, "팀에 멤버가 존재하여 삭제할 수 없습니다."),
+    FORBIDDEN_ACTION(HttpStatus.FORBIDDEN, "권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;

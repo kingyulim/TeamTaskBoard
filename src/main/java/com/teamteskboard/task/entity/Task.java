@@ -2,7 +2,6 @@ package com.teamteskboard.task.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
 import com.teamteskboard.task.dto.request.UpdateTaskRequest;
-import com.teamteskboard.task.dto.request.UpdateTaskStatusRequest;
 import com.teamteskboard.task.enums.TaskPriorityEnum;
 import com.teamteskboard.task.enums.TaskStatusEnum;
 import com.teamteskboard.user.entity.User;
@@ -59,11 +58,12 @@ public class Task extends BaseTimeEntity {
         this.dueDate = dueDate;
     }
 
-    public void update(UpdateTaskRequest request) {
+    public void update(UpdateTaskRequest request, User updatedAssignee) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.status = TaskStatusEnum.valueOf(request.getStatus());
         this.priority = request.getPriority();
+        this.assignee = updatedAssignee;
         this.dueDate = request.getDueDate();
 
     }

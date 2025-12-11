@@ -54,7 +54,6 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(TASK_NOT_FOUND));
 
-        //return ApiResponse.success("작업 조회 성공", GetTaskResponse.fromDetail(task));
         return GetTaskResponse.from(task);
     }
 
@@ -74,7 +73,6 @@ public class TaskService {
 
         Page<GetTaskResponse> response = tasks.map(GetTaskResponse::from);
 
-        //return ApiResponse.success("작업 목록 조회 성공", response);
         return response;
 
     }

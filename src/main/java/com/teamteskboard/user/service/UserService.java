@@ -58,8 +58,6 @@ public class UserService {
                 passwordEncoder.encode(request.getPassword())
         );
 
-        user.setRole(UserRoleEnum.USER);
-
         // 저장
         User createdUser = userRepository.save(user);
 
@@ -113,7 +111,7 @@ public class UserService {
     public GetUserResponse getUser(Long userId) {
         // 로그인된 아이디 확인 → 사용자 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_MEMBER_INFO));
 
         return GetUserResponse.from(user);
     }
@@ -150,20 +148,11 @@ public class UserService {
             throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
         }
 
-        // 이름 수정
-        if (request.getName() != null) {
-            user.setName(request.getName());
-        }
-
-        // 이메일 수정
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
-        }
-
-        // 비밀번호 수정
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+        user.userUpdate(
+                request.getName(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword())
+        );
 
         return UpdateUserResponse.from(user);
     }

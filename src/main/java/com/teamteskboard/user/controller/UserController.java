@@ -62,7 +62,7 @@ public class UserController {
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
-    @PostMapping("/auth/verify-password")
+    @PostMapping("/users/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
             @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody PasswordRequest request

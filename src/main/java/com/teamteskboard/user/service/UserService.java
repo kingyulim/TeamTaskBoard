@@ -45,13 +45,13 @@ public class UserService {
     public CreateUserResponse createUser(CreateUserRequest request) {
         // userName 중복 체크
         if (userRepository.existsByUserName(request.getUsername())) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_USERNAME);
 
         }
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
         }
 
         // 이메일 형식 체크
@@ -155,13 +155,17 @@ public class UserService {
 
         // 이메일 중복 체크 (자기 자신 제외)
         if (request.getEmail() != null && userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
-            throw new CustomException(ExceptionMessageEnum.USER_SAME_ACOUNT);
+            throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
+        }
+
+        // 내 정보의 비밀번호가 맞는지 확인
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ExceptionMessageEnum.INVALID_MEMBER_INFO);
         }
 
         user.userUpdate(
                 request.getName(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
+                request.getEmail()
         );
 
         return UpdateUserResponse.from(user);

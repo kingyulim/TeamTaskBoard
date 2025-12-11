@@ -58,17 +58,14 @@ public class Task extends BaseTimeEntity {
         this.dueDate = dueDate;
     }
 
-    public void update(UpdateTaskRequest request) {
+    public void update(UpdateTaskRequest request, User updatedAssignee) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.status = TaskStatusEnum.valueOf(request.getStatus());
         this.priority = request.getPriority();
+        this.assignee = updatedAssignee;
         this.dueDate = request.getDueDate();
 
-    }
-
-    public void changeAssignee(User assignee){
-        this.assignee = assignee;
     }
 
     public void updateStatus(TaskStatusEnum status) {

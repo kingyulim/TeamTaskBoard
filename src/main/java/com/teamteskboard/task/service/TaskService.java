@@ -94,9 +94,7 @@ public class TaskService {
         User updatedAssignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NO_USER_ID));
 
-        task.changeAssignee(updatedAssignee);
-
-        task.update(request);
+        task.update(request, updatedAssignee);
 
         Task updatedTask = taskRepository.saveAndFlush(task);
 

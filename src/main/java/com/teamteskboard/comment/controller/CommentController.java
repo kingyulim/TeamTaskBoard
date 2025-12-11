@@ -39,7 +39,7 @@ public class CommentController {
     }
 
 
-   //댓글 수정
+    //댓글 수정
     @PutMapping("/tasks/{taskId}/comments/{commentId}")
     public ResponseEntity<ApiResponse<UpdateCommentResponse>> commentUpdate(
             @AuthenticationPrincipal SecurityUser user,
@@ -49,13 +49,13 @@ public class CommentController {
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("댓글이 수정됐습니다.", commentService.update(user.getId(), taskId, commentId,request)));
+                .body(ApiResponse.success("댓글이 수정됐습니다.", commentService.update(user.getId(), taskId, commentId, request)));
 
     }
 
     //삭제
     @DeleteMapping("/tasks/{taskId}/comments/{commentId}")
-    public ResponseEntity <ApiResponse <Void>> commentDelete(
+    public ResponseEntity<ApiResponse<Void>> commentDelete(
             @PathVariable Long commentId,
             @AuthenticationPrincipal SecurityUser user
     ) {
@@ -65,27 +65,27 @@ public class CommentController {
                 .body(ApiResponse.success("댓글이 삭제 되었습니다.", null));
     }
 
-    /**
-     * 댓글 페이징 조회
-     *
-     * @param page
-     * @param size
-     * @return
-     */
+
     @GetMapping("/tasks/{taskId}/comments")
     public ResponseEntity<ApiResponse<Page<PageCommentResponse>>> getCommentPage(
             @PathVariable Long taskId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-//            @RequestParam(defaultValue = "newest") String sort
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "newest") String sort
 
     ) {
 
-        Pageable pageable1 = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (sort.equals("newest")) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
+        } else if (sort.equals("oldest")) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "modifiedAt"));
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("댓글 목록을 조회했습니다.", commentService.getCommentPage(taskId, pageable1)));
+                .body(ApiResponse.success("댓글 목록을 조회했습니다.", commentService.getCommentPage(taskId, pageable)));
     }
 }
 

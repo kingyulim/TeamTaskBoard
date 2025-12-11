@@ -47,4 +47,7 @@ public class User extends BaseTimeEntity {
     }
 
     // 기능
+    public void userDelete(Boolean isDelete) {
+        this.isDeleted = isDelete;
+    }
 }

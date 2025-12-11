@@ -32,7 +32,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<CreateUserResponse>> createUser(
             @Valid @RequestBody CreateUserRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
+        CreateUserResponse result = userService.createUser(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("회원가입이 완료되었습니다.",  result));
     }
 
     /**
@@ -81,7 +85,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
         @PathVariable Long id
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
+        GetUserResponse result = userService.getUser(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보 조회 성공",  result));
     }
 
     /**
@@ -90,7 +96,9 @@ public class UserController {
      */
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<GetUserResponse>>> getUserList() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserList());
+        List<GetUserResponse> result = userService.getUserList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 목록 조회 성공", result));
     }
 
     /**
@@ -110,7 +118,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(id, request));
+        UpdateUserResponse result = userService.updateUser(id, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보가 수정되었습니다.", result));
     }
 
     /**

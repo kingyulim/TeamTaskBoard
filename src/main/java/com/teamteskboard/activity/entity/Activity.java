@@ -1,6 +1,7 @@
-package com.teamteskboard.activities.entity;
+package com.teamteskboard.activity.entity;
 
 import com.teamteskboard.common.entity.BaseTimeEntity;
+import com.teamteskboard.common.enums.ActivityTypeEnum;
 import com.teamteskboard.task.entity.Task;
 import com.teamteskboard.user.entity.User;
 import jakarta.persistence.*;
@@ -8,13 +9,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
-@Table(name = "Activities")
+@Table(name = "activities")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class activities extends BaseTimeEntity {
+public class Activity extends BaseTimeEntity {
     // 속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,25 +21,23 @@ public class activities extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_id")
-    private Task task_id;
+    private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User user;
 
     @Column(length = 20, nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private LocalDateTime timeStamp;
+    private ActivityTypeEnum type;
 
     @Column(length = 250, nullable = false)
     private String description;
     
     // 생성자
-    public activities(Task task_id, User user_id, String description) {
-        this.task_id = task_id;
-        this.user_id = user_id;
+    public Activity(Task task, User user, ActivityTypeEnum type, String description) {
+        this.task = task;
+        this.user = user;
+        this.type = type;
         this.description = description;
     }
 }

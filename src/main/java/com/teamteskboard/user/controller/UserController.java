@@ -2,6 +2,7 @@ package com.teamteskboard.user.controller;
 
 import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.response.ApiResponse;
+import com.teamteskboard.team.dto.response.TeamMemberResponse;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -49,6 +50,7 @@ public class UserController {
            @Valid @RequestBody LoginRequest request
     ) {
         LoginResponse result = userService.login(request);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("로그인 성공", result));
@@ -60,7 +62,7 @@ public class UserController {
      * @param request 비밀번호 확인 요청 DTO (비밀번호)
      * @return 비밀번호 응답 DTO (일치 여부)
      */
-    @PostMapping("/auth/verify-password")
+    @PostMapping("/users/verify-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> verifyPassword(
             @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody PasswordRequest request
@@ -83,11 +85,20 @@ public class UserController {
      */
     @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
+        @AuthenticationPrincipal SecurityUser user,
         @PathVariable Long id
     ) {
         GetUserResponse result = userService.getUser(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보 조회 성공",  result));
+        if (result == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("사용자를 찾을 수 없습니다."));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 정보 조회 성공",  result));
     }
 
     /**
@@ -98,7 +109,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<GetUserResponse>>> getUserList() {
         List<GetUserResponse> result = userService.getUserList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 목록 조회 성공", result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 목록 조회 성공", result));
     }
 
     /**
@@ -115,12 +128,16 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest request
     ) {
         if (!user.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("권한이 없습니다."));
         }
 
         UpdateUserResponse result = userService.updateUser(id, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보가 수정되었습니다.", result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 정보가 수정되었습니다.", result));
     }
 
     /**
@@ -135,12 +152,30 @@ public class UserController {
             @PathVariable Long id
     ) {
         if (!user.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("권한이 없습니다."));
         }
 
         // 회원 삭제
         userService.deleteUser(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("회원 탈퇴가 완료 되었습니다.", null));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("회원 탈퇴가 완료 되었습니다.", null));
+    }
+
+    /**
+     * 추가 가능한 사용자 목록 조회 요청 검증
+     * @param teamId 팀 고유 번호 파라미터
+     * @return TeamMemberResponse list 형태 반환
+     */
+    @GetMapping("/users/available")
+    public ResponseEntity<ApiResponse<List<TeamMemberResponse>>> getUserAvailable(
+            @RequestParam(required = false) Long teamId
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("추가 가능한 사용자 목록 조회 성공", userService.addTeamUser(teamId)));
     }
 }

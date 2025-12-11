@@ -37,4 +37,17 @@ public class GetMyDashboardResponse {
         }
 
     }
+
+    // 정적메서드 추가
+    public static GetMyDashboardResponse from(
+            List<Task> today,
+            List<Task> upcoming,
+            List<Task> overdue
+    ) {
+        return new GetMyDashboardResponse(
+                today.stream().map(TaskSummary::from).toList(),
+                upcoming.stream().map(TaskSummary::from).toList(),
+                overdue.stream().map(TaskSummary::from).toList()
+        );
+    }
 }

@@ -33,10 +33,8 @@ public class TaskController {
             @Valid @RequestBody CreateTaskRequest request ) {
 
         CreateTaskResponse response = taskService.saveTask(request);
-        ApiResponse<CreateTaskResponse> result =
-                ApiResponse.success("작업이 생성되었습니다.", response);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("작업이 생성되었습니다.", response));
     }
 
     // 단건 조회
@@ -44,10 +42,8 @@ public class TaskController {
     public ResponseEntity<ApiResponse<GetTaskResponse>> getTask(@PathVariable Long id) {
 
         GetTaskResponse response = taskService.getTask(id);
-        ApiResponse<GetTaskResponse> result =
-                ApiResponse.success("작업 조회 성공", response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 조회 성공", response));
     }
 
     // 전체 조회
@@ -64,10 +60,7 @@ public class TaskController {
         Page<GetTaskResponse> response =
                 taskService.getAllTasks(status, search, assigneeId, pageable);
 
-        ApiResponse<Page<GetTaskResponse>> result =
-                ApiResponse.success("작업 목록 조회 성공", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 목록 조회 성공", response));
     }
 
 
@@ -81,10 +74,7 @@ public class TaskController {
         UpdateTaskResponse response =
                 taskService.updateTask(request, id, user.getId());
 
-        ApiResponse<UpdateTaskResponse> result =
-                ApiResponse.success("작업이 수정되었습니다.", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 수정되었습니다.", response));
     }
 
     // 상태 수정
@@ -97,10 +87,7 @@ public class TaskController {
         UpdateTaskResponse response =
                 taskService.updateTaskStatus(request, id, user.getId());
 
-        ApiResponse<UpdateTaskResponse> result =
-                ApiResponse.success("작업 상태가 변경되었습니다.", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 상태가 변경되었습니다.", response));
     }
 
     // 삭제
@@ -111,9 +98,6 @@ public class TaskController {
 
         taskService.deleteTask(id, user.getId());
 
-        ApiResponse<Void> result =
-                ApiResponse.success("작업이 삭제되었습니다.", null);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 삭제되었습니다.", null));
     }
 }

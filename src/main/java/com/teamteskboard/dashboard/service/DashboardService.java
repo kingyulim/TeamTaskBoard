@@ -39,7 +39,7 @@ public class DashboardService {
         // 내 진행률(완료율)
         double completionRate = (myTotalTasks == 0) ? 0 : (myCompletedTasks*100.0 /myTotalTasks);
 
-        return new GetDashboardStatsResponse(
+        return GetDashboardStatsResponse.from(
                 totalTasks,
                 completedTasks,
                 inProgressTasks,
@@ -60,10 +60,10 @@ public class DashboardService {
         // 지연된 일
         List<Task> overdueTasks = taskRepository.findOverdueTasks(userId);
 
-        return new GetMyDashboardResponse(
-                todayTasks.stream().map(GetMyDashboardResponse.TaskSummary::from).toList(),
-                upcomingTasks.stream().map(GetMyDashboardResponse.TaskSummary::from).toList(),
-                overdueTasks.stream().map(GetMyDashboardResponse.TaskSummary::from).toList()
+        return GetMyDashboardResponse.from(
+                todayTasks,
+                upcomingTasks,
+                overdueTasks
         );
     }
 

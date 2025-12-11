@@ -7,6 +7,11 @@ import com.teamteskboard.common.utils.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
 import com.teamteskboard.common.utils.JwtUtil;
+import com.teamteskboard.team.dto.response.TeamMemberResponse;
+import com.teamteskboard.team.entity.Team;
+import com.teamteskboard.team.entity.UserTeams;
+import com.teamteskboard.team.repository.TeamRepository;
+import com.teamteskboard.team.repository.UserTeamsRepository;
 import com.teamteskboard.user.dto.request.CreateUserRequest;
 import com.teamteskboard.user.dto.request.LoginRequest;
 import com.teamteskboard.user.dto.request.PasswordRequest;
@@ -19,11 +24,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
+    private final UserTeamsRepository userTeamsRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -168,5 +177,41 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         user.userDelete(true);
+    }
+
+    /**
+     * 추가 가능한 사용자 목록 조회 비지니스 로직 처리
+     * @param teamId 팀 고유 번호
+     * @return TeamMemberResponse list json 반환
+     */
+    @Transactional(readOnly = true)
+    public List<TeamMemberResponse> addTeamUser(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
+
+        // 회원정보 전체
+        List<User> users = userRepository.findAll();
+
+        // 내가 입력한 팀 정보 전체
+        List<UserTeams> userTeams = userTeamsRepository.findAllByTeam(team);
+
+        // 내가 입력한 팀의 모든 id 정보 가져오기
+        Set<Long> userIds = userTeams
+                .stream()
+                .map(u -> u.getUser().getId())
+                .collect(Collectors.toSet());
+
+        return users
+                .stream()
+                .filter(t -> !userIds.contains(t.getId()))
+                .map(u -> new TeamMemberResponse(
+                        u.getId(),
+                        u.getUserName(),
+                        u.getName(),
+                        u.getEmail(),
+                        u.getRole().name(),
+                        u.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 }

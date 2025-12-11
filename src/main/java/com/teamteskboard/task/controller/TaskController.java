@@ -104,6 +104,8 @@ public class TaskController {
             @AuthenticationPrincipal SecurityUser user,
             @PathVariable Long id) {
 
+        taskService.deleteTask(id, user.getId());
+
         ApiResponse<Void> result =
                 ApiResponse.success("작업이 삭제되었습니다.", null);
 

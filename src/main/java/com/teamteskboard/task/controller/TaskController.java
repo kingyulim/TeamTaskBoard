@@ -13,6 +13,9 @@ import com.teamteskboard.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,15 +59,17 @@ public class TaskController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long assigneeId
     ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
 
         Page<GetTaskResponse> response =
-                taskService.getAllTasks(page, size, status, search, assigneeId);
+                taskService.getAllTasks(status, search, assigneeId, pageable);
 
         ApiResponse<Page<GetTaskResponse>> result =
                 ApiResponse.success("작업 목록 조회 성공", response);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
 
     // 수정
     @PutMapping("/api/tasks/{id}")

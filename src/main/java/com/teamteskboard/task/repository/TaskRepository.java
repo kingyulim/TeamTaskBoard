@@ -22,7 +22,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         SELECT t FROM Task t
         WHERE t.isDeleted = false
           AND (:status IS NULL OR t.status = :status)
-          AND (:assigneeId IS NULL OR t.id = :assigneeId)
+          AND (:assigneeId IS NULL OR t.assignee.id = :assigneeId)
           AND (
                 :search IS NULL OR
                 t.title LIKE %:search% OR

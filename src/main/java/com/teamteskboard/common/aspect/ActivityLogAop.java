@@ -83,17 +83,16 @@ public class ActivityLogAop {
         // 사용자
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_USER_ID));
+
         // 활동 타입
         ActivityTypeEnum type = ActivityTypeEnum.fromMethodName(methodName);
-        log.info("활동 타입: {}", type);
+
+        // 변경 내용
+        String description = type != null ? type.apply(task.getTitle()) : "";
 
         // 활동 로그
-        Activity activity = new Activity(
-                task,
-                user,
-                type,
-                ""
-        );
+        log.info("활동 타입: {}, 변경 내용: {}", type, description);
+        Activity activity = new Activity(task, user, type, description);
         activityRepository.save(activity); // 저장!
     }
 

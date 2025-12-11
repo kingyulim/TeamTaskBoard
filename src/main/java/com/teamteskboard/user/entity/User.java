@@ -59,11 +59,9 @@ public class User extends BaseTimeEntity {
      * 회원 업데이트 기능 메서드
      * @param name 회원 이름
      * @param email 회원 이메일
-     * @param password 회원 비밀번호
      */
-    public void userUpdate(String name, String email, String password) {
+    public void userUpdate(String name, String email) {
         this.name = name;
         this.email = email;
-        this.password = password;
     }
 }

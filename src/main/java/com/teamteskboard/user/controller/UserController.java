@@ -49,6 +49,7 @@ public class UserController {
            @Valid @RequestBody LoginRequest request
     ) {
         LoginResponse result = userService.login(request);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("로그인 성공", result));
@@ -83,11 +84,20 @@ public class UserController {
      */
     @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
+        @AuthenticationPrincipal SecurityUser user,
         @PathVariable Long id
     ) {
         GetUserResponse result = userService.getUser(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보 조회 성공",  result));
+        if (result == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("사용자를 찾을 수 없습니다."));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 정보 조회 성공",  result));
     }
 
     /**
@@ -98,7 +108,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<GetUserResponse>>> getUserList() {
         List<GetUserResponse> result = userService.getUserList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 목록 조회 성공", result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 목록 조회 성공", result));
     }
 
     /**
@@ -115,12 +127,16 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest request
     ) {
         if (!user.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("권한이 없습니다."));
         }
 
         UpdateUserResponse result = userService.updateUser(id, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 정보가 수정되었습니다.", result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("사용자 정보가 수정되었습니다.", result));
     }
 
     /**
@@ -135,7 +151,9 @@ public class UserController {
             @PathVariable Long id
     ) {
         if (!user.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("권한이 없습니다."));
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("권한이 없습니다."));
         }
 
         // 회원 삭제

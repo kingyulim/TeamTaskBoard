@@ -26,10 +26,7 @@ public class DashboardController {
 
         GetDashboardStatsResponse response = dashboardService.getDashboardStats(user.getId());
 
-        ApiResponse<GetDashboardStatsResponse> result =
-                ApiResponse.success("대시보드 통계 조회 성공", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("대시보드 통계 조회 성공", response));
     }
 
     @GetMapping("/tasks")
@@ -38,10 +35,7 @@ public class DashboardController {
 
         GetMyDashboardResponse response = dashboardService.getMyDashboard(user.getId());
 
-        ApiResponse<GetMyDashboardResponse> result =
-                ApiResponse.success("내 작업 요약 조회 성공", response);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("내 작업 요약 조회 성공", response));
 
     }
 

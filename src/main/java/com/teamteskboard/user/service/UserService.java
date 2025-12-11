@@ -55,7 +55,8 @@ public class UserService {
                 request.getName(),
                 request.getUsername(),
                 request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
+                passwordEncoder.encode(request.getPassword()),
+                UserRoleEnum.USER
         );
 
         // 저장

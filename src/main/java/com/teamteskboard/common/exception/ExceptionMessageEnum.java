@@ -15,7 +15,10 @@ public enum ExceptionMessageEnum {
     INVALID_TASK_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 값입니다"),
     NULL_TITLE_ASSIGNEE(HttpStatus.BAD_REQUEST, "제목과 작성자는 필수입니다."),
 
-    USER_SAME_ACOUNT(HttpStatus.BAD_REQUEST, "중복되는 데이터가 존재합니다."),
+    USER_SAME_USERNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자명입니다."),
+    USER_SAME_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+
+
 
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
 

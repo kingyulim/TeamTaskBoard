@@ -96,4 +96,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findOverdueTasks(@Param("userId") Long userId);
 
 
+
+    @Query("SELECT t FROM Task t WHERE t.title LIKE %:keyword% OR t.description LIKE %:keyword%")
+    List<Task> findByKeyword(@Param("keyword") String keyword);
 }

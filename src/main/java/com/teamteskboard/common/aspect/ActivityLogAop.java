@@ -2,6 +2,10 @@ package com.teamteskboard.common.aspect;
 
 import com.teamteskboard.activity.entity.Activity;
 import com.teamteskboard.activity.repository.ActivityRepository;
+import com.teamteskboard.comment.dto.response.CreatedCommentResponse;
+import com.teamteskboard.comment.dto.response.UpdateCommentResponse;
+import com.teamteskboard.comment.entity.Comment;
+import com.teamteskboard.comment.repository.CommentRepository;
 import com.teamteskboard.common.enums.ActivityTypeEnum;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
@@ -28,32 +32,47 @@ public class ActivityLogAop {
     private final ActivityRepository activityRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Pointcut("execution(* com.teamteskboard.task.service.TaskService.saveTask(..)) || " +
             "execution(* com.teamteskboard.task.service.TaskService.updateTask(..)) || " +
             "execution(* com.teamteskboard.task.service.TaskService.updateTaskStatus(..))")
-    public void taskServiceMethods() {}
+    public void taskMethods() {}
 
     @Pointcut("execution(* com.teamteskboard.task.service.TaskService.deleteTask(..))")
-    public void deleteTaskMethods() {}
+    public void taskDeleteMethods() {}
 
-    @Pointcut("execution(* com.teamteskboard.comment.service..*(..))")
-    public void commentServiceMethods() {}
+    @Pointcut("execution(* com.teamteskboard.comment.service.CommentService.save(..)) ||" +
+            "execution(* com.teamteskboard.comment.service.CommentService.update(..))")
+    public void commentMethods() {}
 
-    @AfterReturning(pointcut = "taskServiceMethods()", returning = "result")
-    public void logAfter(JoinPoint joinPoint, Object result){
+    @Pointcut("execution(* com.teamteskboard.comment.service.CommentService.Delete(..))")
+    public void commentDeleteMethods() {}
+
+    @AfterReturning(pointcut = "taskMethods() || commentMethods()", returning = "result")
+    public void AfterSaveAndUpdate(JoinPoint joinPoint, Object result){
         Long taskId = extractTaskId(result); // 작업 Id
         Long userId = extractUserId(result); // 사용자 Id
         String methodName = joinPoint.getSignature().getName(); // 메서드 이름
         save(taskId, userId, methodName);
     }
 
-    @AfterReturning(pointcut = "deleteTaskMethods()")
-    public void logAfter(JoinPoint joinPoint){
+    @AfterReturning(pointcut = "taskDeleteMethods() || commentDeleteMethods()")
+    public void AfterDelete(JoinPoint joinPoint){
         Object[] args = joinPoint.getArgs();
-        Long taskId = (Long) args[0];
-        Long userId = (Long) args[1];
+        Long taskId = null;
+        Long userId = null;
         String methodName = joinPoint.getSignature().getName();
+
+        if (methodName.equals("deleteTask")) {
+            taskId = (Long) args[0];
+            userId = (Long) args[1];
+        } else if (methodName.equals("Delete")) {
+            userId = (Long) args[0];
+            Comment comment = commentRepository.findById((Long) args[1])
+                    .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_COMMENT));
+            taskId = comment.getTask().getId();
+        }
         save(taskId, userId, methodName);
     }
 
@@ -81,9 +100,12 @@ public class ActivityLogAop {
     private static Long extractTaskId(Object result) {
         if (result instanceof CreateTaskResponse dto) {
             return dto.getId();
-        }
-        if (result instanceof UpdateTaskResponse dto) {
+        } else if (result instanceof UpdateTaskResponse dto) {
             return dto.getId();
+        } else if (result instanceof CreatedCommentResponse dto) {
+            return dto.getTaskId();
+        } else if (result instanceof UpdateCommentResponse dto) {
+            return dto.getTaskId();
         }
         return null;
     }
@@ -91,9 +113,12 @@ public class ActivityLogAop {
     private static Long extractUserId(Object result) {
         if (result instanceof CreateTaskResponse dto) {
             return dto.getAssigneeId();
-        }
-        if (result instanceof UpdateTaskResponse dto) {
+        } else if (result instanceof UpdateTaskResponse dto) {
             return dto.getAssigneeId();
+        } else if (result instanceof CreatedCommentResponse dto) {
+            return dto.getUserId();
+        } else if (result instanceof UpdateCommentResponse dto) {
+            return dto.getUserId();
         }
         return null;
     }

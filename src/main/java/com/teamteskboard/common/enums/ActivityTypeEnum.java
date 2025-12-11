@@ -10,9 +10,9 @@ public enum ActivityTypeEnum {
     TASK_UPDATED("updateTask", "작업 수정"),
     TASK_DELETED("deleteTask", "작업 삭제"),
     TASK_STATUS_CHANGED("updateTaskStatus", "작업 상태 변경"),
-    COMMENT_CREATED("", "댓글 작성"),
-    COMMENT_UPDATED("", "댓글 수정"),
-    COMMENT_DELETED("", "댓글 삭제");
+    COMMENT_CREATED("save", "댓글 작성"),
+    COMMENT_UPDATED("update", "댓글 수정"),
+    COMMENT_DELETED("Delete", "댓글 삭제");
 
     private final String methodName;
     private final String type;

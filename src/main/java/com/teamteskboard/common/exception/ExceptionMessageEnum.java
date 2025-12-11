@@ -4,9 +4,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Date;
+
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionMessageEnum {
+
+    //댓글
+    NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "해당 작업물을 찾을 수 없습니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
+    COMMENT_ACCESS_DENIED_EXCEPTION(HttpStatus.UNAUTHORIZED, "댓글 수정/삭제 권한이 없습니다."),
+
+
     NO_MEMBER_ID(HttpStatus.NOT_FOUND, "해당 ID의 회원을 찾을 수 없습니다."),
     NO_MEMBER_INFO(HttpStatus.NOT_FOUND, "해당 회원 정보를 찾을 수 없습니다."),
     LOGIN_CHECK(HttpStatus.UNAUTHORIZED, "로그인이 되어있습니다."),
@@ -26,7 +36,7 @@ public enum ExceptionMessageEnum {
     ALREADY_FRIEND_EXCEPTION(HttpStatus.UNAUTHORIZED, "해당 유저는 이미 친구입니다."),
     NOT_FRIEND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 유저는 친구가 아닙니다."),
     COMMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
-    COMMENT_ACCESS_DENIED_EXCEPTION(HttpStatus.UNAUTHORIZED, "댓글 수정/삭제 권한이 없습니다."),
+//    COMMENT_ACCESS_DENIED_EXCEPTION(HttpStatus.UNAUTHORIZED, "댓글 수정/삭제 권한이 없습니다."),
     NULL_POINT_EXCEPTION(HttpStatus.BAD_REQUEST, "입력란이 비어있습니다.")
     ;
 

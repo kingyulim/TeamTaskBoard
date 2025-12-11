@@ -1,4 +1,4 @@
-package com.teamteskboard.comment.dto;
+package com.teamteskboard.comment.dto.request;
 
 import lombok.Getter;
 

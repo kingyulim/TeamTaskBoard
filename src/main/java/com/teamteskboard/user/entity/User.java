@@ -20,6 +20,9 @@ public class User extends BaseTimeEntity {
     private String username;
 
     @Column(length = 20, nullable = false)
+    private String name;
+
+    @Column(length = 20, nullable = false)
     private String email;
 
     @Column(length = 250, nullable = false)
@@ -32,8 +35,9 @@ public class User extends BaseTimeEntity {
     private Boolean disDeleted = false;
 
     // 생성자
-    public User(String username, String email, String password, String role) {
+    public User(String username, String name ,String email, String password, String role) {
         this.username = username;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;

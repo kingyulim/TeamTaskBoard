@@ -1,5 +1,6 @@
 package com.teamteskboard.task.entity;
 
+import com.teamteskboard.comment.entity.Comment;
 import com.teamteskboard.common.entity.BaseTimeEntity;
 import com.teamteskboard.user.entity.User;
 import jakarta.persistence.*;
@@ -55,5 +56,8 @@ public class Task extends BaseTimeEntity {
         this.priority = priority;
         this.assigneeId = assigneeId;
         this.userId = userId;
+
+        this.dueDatetime = dueDatetime;
+        this.isDeleted = false;
     }
 }

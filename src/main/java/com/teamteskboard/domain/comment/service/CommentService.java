@@ -2,7 +2,6 @@ package com.teamteskboard.domain.comment.service;
 
 import com.teamteskboard.domain.comment.dto.request.CreatedCommentRequest;
 import com.teamteskboard.domain.comment.dto.request.UpdateCommentRequest;
-import com.teamteskboard.comment.dto.response.*;
 import com.teamteskboard.domain.comment.dto.response.CreatedCommentResponse;
 import com.teamteskboard.domain.comment.dto.response.PageCommentResponse;
 import com.teamteskboard.domain.comment.dto.response.UpdateCommentResponse;

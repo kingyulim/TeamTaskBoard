@@ -41,7 +41,8 @@ public class TeamController {
     public ApiResponse<GetOneTeamResponse> getOneTeam(
             @PathVariable Long id
     ) {
-        return ApiResponse.success("팀 조회 성공", teamService.getOneTeam(id));
+        return ApiResponse
+                .success("팀 조회 성공", teamService.getOneTeam(id));
     }
 
     // 팀 수정 API
@@ -61,6 +62,7 @@ public class TeamController {
             @PathVariable Long id
     ) {
         teamService.deleteTeam(id);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("팀이 삭제되었습니다.", null));
@@ -96,6 +98,7 @@ public class TeamController {
             @PathVariable Long userId
     ) {
         teamService.removeTeamMember(teamId, userId);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 멤버가 제거되었습니다.", null));

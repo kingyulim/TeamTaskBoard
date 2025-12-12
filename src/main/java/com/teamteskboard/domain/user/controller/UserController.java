@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
+
     private final UserService userService;
 
     /**
@@ -66,13 +67,15 @@ public class UserController {
     ) {
         PasswordResponse result = userService.verifyPassword(user.getId(), request);
 
-        if (result.isValid())
-            return ResponseEntity.status(HttpStatus.OK)
+        if (result.isValid()) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
                     .body(ApiResponse.success("비밀번호가 확인되었습니다.", result));
-        else
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("비밀번호가 올바르지 않습니다.", result));
+        }
 
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("비밀번호가 올바르지 않습니다.", result));
     }
 
     /**

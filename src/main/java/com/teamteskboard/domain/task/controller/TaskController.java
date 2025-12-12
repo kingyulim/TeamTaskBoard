@@ -32,11 +32,13 @@ public class TaskController {
      */
     @PostMapping("/api/tasks")
     public ResponseEntity<ApiResponse<CreateTaskResponse>> createTask(
-            @Valid @RequestBody CreateTaskRequest request ) {
-
+            @Valid @RequestBody CreateTaskRequest request
+    ) {
         CreateTaskResponse response = taskService.saveTask(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("작업이 생성되었습니다.", response));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("작업이 생성되었습니다.", response));
     }
 
     /**
@@ -46,10 +48,11 @@ public class TaskController {
      */
     @GetMapping("/api/tasks/{id}")
     public ResponseEntity<ApiResponse<GetTaskResponse>> getTask(@PathVariable Long id) {
-
         GetTaskResponse response = taskService.getTask(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 조회 성공", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("작업 조회 성공", response));
     }
 
     /**
@@ -71,10 +74,11 @@ public class TaskController {
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
 
-        Page<GetTaskResponse> response =
-                taskService.getAllTasks(status, search, assigneeId, pageable);
+        Page<GetTaskResponse> response = taskService.getAllTasks(status, search, assigneeId, pageable);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 목록 조회 성공", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("작업 목록 조회 성공", response));
     }
 
 
@@ -89,12 +93,13 @@ public class TaskController {
     public ResponseEntity<ApiResponse<UpdateTaskResponse>> updateTask(
             @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody UpdateTaskRequest request,
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
+        UpdateTaskResponse response = taskService.updateTask(request, id, user.getId());
 
-        UpdateTaskResponse response =
-                taskService.updateTask(request, id, user.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 수정되었습니다.", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("작업이 수정되었습니다.", response));
     }
 
     /**
@@ -108,12 +113,14 @@ public class TaskController {
     public ResponseEntity<ApiResponse<UpdateTaskResponse>> updateTaskStatus(
             @AuthenticationPrincipal SecurityUser user,
             @Valid @RequestBody UpdateTaskStatusRequest request,
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
 
-        UpdateTaskResponse response =
-                taskService.updateTaskStatus(request, id, user.getId());
+        UpdateTaskResponse response = taskService.updateTaskStatus(request, id, user.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업 상태가 변경되었습니다.", response));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("작업 상태가 변경되었습니다.", response));
     }
 
     /**
@@ -125,10 +132,13 @@ public class TaskController {
     @DeleteMapping("/api/tasks/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteTask(
             @AuthenticationPrincipal SecurityUser user,
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
 
         taskService.deleteTask(id, user.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("작업이 삭제되었습니다.", null));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("작업이 삭제되었습니다.", null));
     }
 }

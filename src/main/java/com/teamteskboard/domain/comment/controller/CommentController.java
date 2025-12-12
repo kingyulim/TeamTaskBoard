@@ -27,7 +27,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/tasks/{taskId}/comments")
     public ResponseEntity<ApiResponse<CreatedCommentResponse>> createdComment(
             @PathVariable Long taskId,
@@ -39,7 +38,6 @@ public class CommentController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("댓글이 작성되었습니다.", commentService.save(taskId, user.getId(), request)));
     }
-
 
     //댓글 수정
     @PutMapping("/tasks/{taskId}/comments/{commentId}")

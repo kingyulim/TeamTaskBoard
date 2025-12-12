@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class LoginResponse {
+
     private final String token;
 
     public static LoginResponse from(String token) {

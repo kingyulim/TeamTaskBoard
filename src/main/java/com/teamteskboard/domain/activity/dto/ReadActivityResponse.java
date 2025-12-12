@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class ReadActivityResponse {
+
     private final Long id;
     private final ActivityTypeEnum type;
     private final Long userId;

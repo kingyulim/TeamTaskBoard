@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class UpdateTaskResponse {
     private Long id;

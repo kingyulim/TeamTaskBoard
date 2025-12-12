@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class UpdateUserRequest {
+
     @NotBlank(message = "이름이 입력되지 않았습니다.")
     @Pattern(regexp = RegExp.NAME)
     private String name;

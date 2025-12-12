@@ -14,7 +14,6 @@ public class UserDto5 {
     private String email;
     private String role;
 
-
     public static UserDto5 from(User user) {
         return new UserDto5(
                 user.getId(),

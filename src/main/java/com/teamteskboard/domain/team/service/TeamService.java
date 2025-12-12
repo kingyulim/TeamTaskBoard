@@ -27,7 +27,6 @@ public class TeamService {
     // 팀 생성
     @Transactional
     public CreatedTeamResponse createTeam(CreatedTeamRequest request) {
-
         // 요청값 검증 — 이름 필수 (Valid로 뺄 예정)
         if (request.getName() == null || request.getName().isBlank()) {
             throw new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND);
@@ -49,7 +48,6 @@ public class TeamService {
     // 팀 목록 전체 조회
     @Transactional(readOnly = true)
     public List<GetAllTeamsResponse> getAllTeams() {
-
         // 1. 모든 팀 조회
         List<Team> teams = teamRepository.findAll();
 
@@ -101,7 +99,6 @@ public class TeamService {
     // 팀 수정
     @Transactional
     public UpdatedTeamResponse updateTeam(Long teamId, UpdatedTeamRequest request) {
-
         // 1. 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));

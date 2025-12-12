@@ -12,5 +12,4 @@ public class UpdateTaskStatusRequest {
 
     @NotNull
     private String status;
-
 }

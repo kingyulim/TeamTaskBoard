@@ -29,8 +29,8 @@ public class DashboardController {
      */
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<GetDashboardStatsResponse>> getDashboardStats(
-            @AuthenticationPrincipal SecurityUser user) {
-
+            @AuthenticationPrincipal SecurityUser user
+    ) {
         GetDashboardStatsResponse response = dashboardService.getDashboardStats(user.getId());
 
         return ResponseEntity
@@ -44,8 +44,8 @@ public class DashboardController {
      */
     @GetMapping("/tasks")
     public ResponseEntity<ApiResponse<GetMyDashboardResponse>> getMyDashboard(
-            @AuthenticationPrincipal SecurityUser user){
-
+            @AuthenticationPrincipal SecurityUser user
+    ){
         GetMyDashboardResponse response = dashboardService.getMyDashboard(user.getId());
 
         return ResponseEntity
@@ -59,13 +59,10 @@ public class DashboardController {
      */
     @GetMapping("/weekly-trend")
     public ResponseEntity<ApiResponse<List<GetWeeklyDashboardResponse>>> getWeeklyTrend() {
-
         List<GetWeeklyDashboardResponse> response = dashboardService.getWeeklyDashboard();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("주간 작업 추세 조회 성공", response));
     }
-
-
 }

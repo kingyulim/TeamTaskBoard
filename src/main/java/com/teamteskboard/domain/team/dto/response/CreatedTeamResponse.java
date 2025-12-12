@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class CreatedTeamResponse {
+
     private final Long id;
     private final String name;
     private final String description;

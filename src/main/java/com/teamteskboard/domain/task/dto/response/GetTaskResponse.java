@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class GetTaskResponse {
 
@@ -19,10 +18,8 @@ public class GetTaskResponse {
     private String description;
     private TaskStatusEnum status;
     private TaskPriorityEnum priority;
-
     private Long assigneeId;
     private Object assignee;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime dueDate;

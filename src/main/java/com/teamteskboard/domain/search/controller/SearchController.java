@@ -16,6 +16,11 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    /**
+     * 검색어 검색 기능
+     * @param query (검색 키워드)
+     * @return 검색 키워드가 포함된 응답 DTO 반환
+     */
     @GetMapping("/api/search")
     public ResponseEntity<ApiResponse<SearchResponse>> search(
             @RequestParam(required = false) String query

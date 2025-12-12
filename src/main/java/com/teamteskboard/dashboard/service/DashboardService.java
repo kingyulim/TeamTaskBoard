@@ -28,6 +28,10 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
 
+    /**
+     * @param userId 로그인 id
+     * @return DashboardStats응답 DTO
+     */
     @Transactional(readOnly = true)
     public GetDashboardStatsResponse getDashboardStats(Long userId) {
 
@@ -58,6 +62,10 @@ public class DashboardService {
         );
     }
 
+    /**
+     * @param userId 로그인 id
+     * @return My Dashboard 응답 DTO
+     */
     @Transactional(readOnly = true)
     public GetMyDashboardResponse getMyDashboard(Long userId) {
 
@@ -75,6 +83,9 @@ public class DashboardService {
         );
     }
 
+    /**
+     * @return WeeklyDashboard 응답 DTO
+     */
     @Transactional(readOnly = true)
     public List<GetWeeklyDashboardResponse> getWeeklyDashboard() {
 
@@ -89,7 +100,7 @@ public class DashboardService {
             LocalDateTime end = date.atStartOfDay().plusDays(1); // 그 다음날 00:00:00
 
             int tasks = activityRepository.countCreatedTasksByDate(ActivityTypeEnum.TASK_CREATED, start, end);
-            int completed = activityRepository.countCompletedTasksByDate(ActivityTypeEnum.TASK_STATUS_CHANGED, start, end, "에서 DONE"); //description : 작업 상태를 IN_PROGRESS에서 DONE으로 변경했습니다.
+            int completed = activityRepository.countCompletedTasksByDate(ActivityTypeEnum.TASK_STATUS_CHANGED, start, end, "상태를 DONE으로 변경"); //description : 작업 상태를 DONE으로 변경했습니다.
 
             String dayName = convertDay(date.getDayOfWeek());
 

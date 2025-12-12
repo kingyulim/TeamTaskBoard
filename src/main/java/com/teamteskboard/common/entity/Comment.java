@@ -58,5 +58,9 @@ public class Comment extends BaseTimeEntity {
         this.isDeleted = true;
     }
 
+    public Long getUserId() {
+        return user.getId();
+    }
+
 
 }

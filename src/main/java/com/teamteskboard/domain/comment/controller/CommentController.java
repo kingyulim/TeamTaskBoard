@@ -52,8 +52,8 @@ public class CommentController {
      * 댓글 수정 API
      *
      * @param user      인증 사용자 정보
-     * @param taskId    댓글이 속한 Tesk ID
-     * @param commentId 수정하려는 댓글 ID
+     * @param taskId    댓글이 속한 Tesk Id
+     * @param commentId 수정하려는 댓글 Id
      * @param request   수정할 댓글 내용
      * @return 수정된 댓글 정보
      */

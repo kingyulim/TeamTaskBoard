@@ -10,7 +10,7 @@ public enum ExceptionMessageEnum {
 
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 ID의 회원을 찾을 수 없습니다."),
     NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "해당 작업을 찾을 수 없습니다."),
-    TASK_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 작업 수정 권한이 없습니다."),
+    TASK_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 작업 수정/삭제 권한이 없습니다."),
     INVALID_TASK_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 값입니다"),
     USER_SAME_USERNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자명입니다."),
     USER_SAME_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),

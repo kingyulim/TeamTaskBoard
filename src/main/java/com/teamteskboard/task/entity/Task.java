@@ -63,7 +63,7 @@ public class Task extends BaseTimeEntity {
         this.description = request.getDescription();
         this.priority = request.getPriority();
         this.assignee = updatedAssignee;
-        this.dueDate = request.getDueDate();
+        this.dueDate = (request.getDueDate() != null ? request.getDueDate() : LocalDateTime.now().plusDays(7));
 
     }
 

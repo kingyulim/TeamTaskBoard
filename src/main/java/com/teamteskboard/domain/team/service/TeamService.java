@@ -2,11 +2,8 @@ package com.teamteskboard.domain.team.service;
 
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamMemberRequest;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamRequest;
-import com.teamteskboard.domain.team.dto.request.UpdatedTeamRequest;
+import com.teamteskboard.domain.team.dto.request.*;
 import com.teamteskboard.domain.team.dto.response.*;
-import com.teamteskboard.team.dto.response.*;
 import com.teamteskboard.common.entity.Team;
 import com.teamteskboard.common.entity.UserTeams;
 import com.teamteskboard.domain.team.repository.TeamRepository;

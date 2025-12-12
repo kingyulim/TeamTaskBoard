@@ -1,9 +1,7 @@
 package com.teamteskboard.domain.task.service;
 
 import com.teamteskboard.common.exception.CustomException;
-import com.teamteskboard.domain.task.dto.request.CreateTaskRequest;
-import com.teamteskboard.domain.task.dto.request.UpdateTaskRequest;
-import com.teamteskboard.domain.task.dto.request.UpdateTaskStatusRequest;
+import com.teamteskboard.domain.task.dto.request.*;
 import com.teamteskboard.domain.task.dto.response.CreateTaskResponse;
 import com.teamteskboard.domain.task.dto.response.GetTaskResponse;
 import com.teamteskboard.domain.task.dto.response.UpdateTaskResponse;

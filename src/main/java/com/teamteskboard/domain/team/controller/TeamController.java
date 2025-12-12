@@ -1,11 +1,8 @@
 package com.teamteskboard.domain.team.controller;
 
 import com.teamteskboard.common.dto.ApiResponse;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamMemberRequest;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamRequest;
-import com.teamteskboard.domain.team.dto.request.UpdatedTeamRequest;
+import com.teamteskboard.domain.team.dto.request.*;
 import com.teamteskboard.domain.team.dto.response.*;
-import com.teamteskboard.team.dto.response.*;
 import com.teamteskboard.domain.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

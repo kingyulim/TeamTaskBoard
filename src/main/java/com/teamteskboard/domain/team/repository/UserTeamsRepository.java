@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserTeamsRepository extends JpaRepository<UserTeams, Long> {
+
     List<UserTeams> findAllByTeamId(Long teamId);
 
     List<UserTeams> findByTeamId(Long teamId);

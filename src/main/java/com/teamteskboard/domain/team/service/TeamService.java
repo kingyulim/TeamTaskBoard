@@ -2,11 +2,8 @@ package com.teamteskboard.domain.team.service;
 
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamMemberRequest;
-import com.teamteskboard.domain.team.dto.request.CreatedTeamRequest;
-import com.teamteskboard.domain.team.dto.request.UpdatedTeamRequest;
+import com.teamteskboard.domain.team.dto.request.*;
 import com.teamteskboard.domain.team.dto.response.*;
-import com.teamteskboard.team.dto.response.*;
 import com.teamteskboard.common.entity.Team;
 import com.teamteskboard.common.entity.UserTeams;
 import com.teamteskboard.domain.team.repository.TeamRepository;
@@ -27,15 +24,13 @@ public class TeamService {
     private final UserTeamsRepository userTeamsRepository;
     private final UserRepository userRepository;
 
-    // 팀 생성
+    /**
+     * 팀 생성
+     * @param request 팀 생성 입력 값 파라미터
+     * @return ApiResponse<CreatedTeamResponse> 반환
+     */
     @Transactional
     public CreatedTeamResponse createTeam(CreatedTeamRequest request) {
-
-        // 요청값 검증 — 이름 필수 (Valid로 뺄 예정)
-        if (request.getName() == null || request.getName().isBlank()) {
-            throw new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND);
-        }
-
         // 중복 팀 이름 체크
         if (teamRepository.existsByName(request.getName())) {
             throw new CustomException(ExceptionMessageEnum.TEAM_NAME_DUPLICATE);
@@ -49,14 +44,16 @@ public class TeamService {
         return CreatedTeamResponse.from(team, Collections.emptyList());
     }
 
-    // 팀 목록 전체 조회
+    /**
+     * 팀 전체 조회
+     * @return List<GetAllTeamsResponse> 반환
+     */
     @Transactional(readOnly = true)
     public List<GetAllTeamsResponse> getAllTeams() {
-
-        // 1. 모든 팀 조회
+        // 모든 팀 조회
         List<Team> teams = teamRepository.findAll();
 
-        // 2. 각 팀별 멤버 조회 및 매핑
+        // 각 팀별 멤버 조회 및 매핑
         return teams.stream()
                 .map(team -> {
                     List<UserTeams> members = userTeamsRepository.findAllByTeamId(team.getId());
@@ -77,7 +74,11 @@ public class TeamService {
                 .toList();
     }
 
-    // 팀 상세 조회(단 건)
+    /**
+     * 팀 상세 조회
+     * @param id (Team Id)
+     * @return 멤버 정보 리스트가 포함된 GetOneTeamResponse 반환
+     */
     @Transactional(readOnly = true)
     public GetOneTeamResponse getOneTeam(Long id) {
         Team team = teamRepository.findById(id)
@@ -101,20 +102,22 @@ public class TeamService {
     }
 
 
-    // 팀 수정
+    /**
+     * 팀 정보 수정
+     * @param teamId (Team Id)
+     * @param request 수정할 정보 요청 DTO
+     * @return 수정된 정보 응답 DTO
+     */
     @Transactional
     public UpdatedTeamResponse updateTeam(Long teamId, UpdatedTeamRequest request) {
-
-        // 1. 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
-
-        // 3. 필드 업데이트
+        // 필드 업데이트
         team.update(request.getName(), request.getDescription());
         teamRepository.save(team);
 
-        // 4. 멤버 전체 조회
+        // 멤버 전체 조회
         List<UserTeams> members = userTeamsRepository.findAllByTeamId(teamId);
 
         List<TeamMemberResponse> memberResponses = members.stream()
@@ -128,29 +131,35 @@ public class TeamService {
                 ))
                 .toList();
 
-        // 5. 수정된 팀 정보 반환
         return UpdatedTeamResponse.from(team, memberResponses);
     }
 
-    // 팀 삭제
+    /**
+     * 팀 삭제
+     * @param teamId (Team Id)
+     */
     @Transactional
     public void deleteTeam(Long teamId) {
 
-        // 1. 팀 존재 여부 확인
+        // 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
-        // 2. 팀에 멤버 존재 여부 확인
+        // 팀에 멤버 존재 여부 확인
         List<UserTeams> members = userTeamsRepository.findAllByTeam(team);
         if (!members.isEmpty()) {
             throw new CustomException(ExceptionMessageEnum.TEAM_DELETE_HAS_MEMBERS);
         }
 
-        // 3. 팀 삭제
         teamRepository.delete(team);
     }
 
-    // 팀 멤버 추가
+    /**
+     * 팀 멤버 추가
+     * @param teamId (Team Id)
+     * @param request 추가할 멤버 요청 DTO
+     * @return 팀 + 추가된 멤버 응답 DTO
+     */
     @Transactional
     public CreatedTeamResponse createdTeamMember(Long teamId, CreatedTeamMemberRequest request) {
 
@@ -189,7 +198,11 @@ public class TeamService {
         return CreatedTeamResponse.from(team, members);
     }
 
-    // 팀 멤버 조회
+    /**
+     * 팀 멤버 조회
+     * @param teamId (Team Id)
+     * @return List<TeamMemberResponse> 반환
+     */
     @Transactional(readOnly = true)
     public List<TeamMemberResponse> getTeamMembers(Long teamId) {
 
@@ -213,26 +226,26 @@ public class TeamService {
                 .toList();
     }
 
-    // 팀 멤버 삭제 기능
+    /**
+     * 팀 멤버 삭제
+     * @param teamId (Team Id)
+     * @param userId (User Id)
+     */
     @Transactional
     public void removeTeamMember(Long teamId, Long userId) {
 
-        // 1. 팀 존재 확인
+        // 팀 존재 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
-        // 2. 유저 존재 확인
+        // 유저 존재 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
-        // 3. 팀 멤버 존재 확인
+        // 팀 멤버 존재 확인
         UserTeams userTeam = userTeamsRepository.findByTeamAndUser(team, user)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_MEMBER_NOT_FOUND));
 
-        // 4. 권한 체크 (추가 예정)
-
-
-        // 5. 삭제
         userTeamsRepository.delete(userTeam);
     }
 }

@@ -16,13 +16,16 @@ import com.teamteskboard.common.entity.User;
 import com.teamteskboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
-
 
 public class CommentService {
     private final CommentRepository commentRepository;
@@ -58,8 +61,7 @@ public class CommentService {
         Comment comment = new Comment(user, task, request.getContent(), request.getParentId());
         Comment save = commentRepository.save(comment);
 
-        return  CreatedCommentResponse.from(save);
-
+        return CreatedCommentResponse.from(save);
     }
 
 
@@ -84,7 +86,7 @@ public class CommentService {
 
     //삭제
     @Transactional
-    public void Delete(Long userId, Long commentId){
+    public void Delete(Long userId, Long commentId) {
         Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_COMMENT)
                 );
@@ -97,8 +99,31 @@ public class CommentService {
         comment.getIsDelete();
     }
 
+
     //페이징 조회
     @Transactional(readOnly = true)
+    public Page<PageCommentResponse> getCommentList(Long taskId, Pageable pageable) {
+
+        //대댓글 제외하고 찾기
+        Page<Comment> commentPage = commentRepository.findAllByTaskIdAndParentIdIsNullAndIsDeletedFalse(taskId, pageable);
+
+        //대댓글 찾기
+        List<Comment> commentList = commentRepository.findByTaskIdAndParentIdIsNotNullAndIsDeletedFalseOrderByCreatedAtAsc(taskId);
+
+        List<PageCommentResponse> result = new ArrayList<>();
+        for (Comment commentParent : commentPage.getContent()) {
+
+            result.add(PageCommentResponse.from(commentParent));
+
+            for (Comment child : commentList) {
+                if (child.getParentId().equals(commentParent.getId())) {
+                    result.add(PageCommentResponse.from(child));
+                }
+            }
+        }
+        return new PageImpl<>(result, pageable, commentPage.getTotalElements());
+    }
+
     public Page<PageCommentResponse> getCommentPage(Long taskId, Pageable pageable) {
         Page<Comment> commentPage = commentRepository.findByTaskIdAndIsDeletedFalse(taskId, pageable);
         return commentPage.map(PageCommentResponse::from);

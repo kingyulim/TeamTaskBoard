@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
@@ -34,22 +35,18 @@ public class ActivityLogAop {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.saveTask(..)) || " +
-            "execution(* com.teamteskboard.task.service.TaskService.updateTask(..)) || " +
+    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.saveTask(..)) ||" +
+            "execution(* com.teamteskboard.task.service.TaskService.updateTask(..)) ||" +
+            "execution(* com.teamteskboard.comment.service.CommentService.save(..)) ||" +
+            "execution(* com.teamteskboard.comment.service.CommentService.update(..)) ||" +
             "execution(* com.teamteskboard.task.service.TaskService.updateTaskStatus(..))")
-    public void taskMethods() {}
+    public void SaveAndUpdateMethods() {}
 
-    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.deleteTask(..))")
-    public void taskDeleteMethods() {}
+    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.deleteTask(..)) ||" +
+            "execution(* com.teamteskboard.comment.service.CommentService.Delete(..))")
+    public void DeleteMethods() {}
 
-    @Pointcut("execution(* com.teamteskboard.comment.service.CommentService.save(..)) ||" +
-            "execution(* com.teamteskboard.comment.service.CommentService.update(..))")
-    public void commentMethods() {}
-
-    @Pointcut("execution(* com.teamteskboard.comment.service.CommentService.Delete(..))")
-    public void commentDeleteMethods() {}
-
-    @AfterReturning(pointcut = "taskMethods() || commentMethods()", returning = "result")
+    @AfterReturning(pointcut = "SaveAndUpdateMethods()", returning = "result")
     public void AfterSaveAndUpdate(JoinPoint joinPoint, Object result){
         Long taskId = extractTaskId(result); // 작업 Id
         Long userId = extractUserId(result); // 사용자 Id
@@ -57,7 +54,7 @@ public class ActivityLogAop {
         save(taskId, userId, methodName);
     }
 
-    @AfterReturning(pointcut = "taskDeleteMethods() || commentDeleteMethods()")
+    @AfterReturning(pointcut = "DeleteMethods()")
     public void AfterDelete(JoinPoint joinPoint){
         Object[] args = joinPoint.getArgs();
         Long taskId = null;
@@ -88,10 +85,11 @@ public class ActivityLogAop {
         ActivityTypeEnum type = ActivityTypeEnum.fromMethodName(methodName);
 
         // 변경 내용
-        String description = type != null ? type.apply(task.getTitle()) : "";
+        String other = methodName.equals("updateTaskStatus") ? task.getStatus().name() : "";
+        String description = type != null ? type.apply(task.getTitle(), other) : "";
 
         // 활동 로그
-        log.info("활동 타입: {}, 변경 내용: {}", type, description);
+        log.info("[{}] {}", type, description);
         Activity activity = new Activity(task, user, type, description);
         activityRepository.save(activity); // 저장!
     }

@@ -14,8 +14,8 @@ public class GetDashboardStatsResponse {
 
     private final int overdueTasks;// 기한 초과
 
-    private final double teamProgress; //팀 진행률
-    private final double completionRate;//내 진행률
+    private final int teamProgress; //팀 진행률
+    private final int completionRate;//내 진행률
 
     // 정적메서드 추가
     public static GetDashboardStatsResponse from(
@@ -24,8 +24,8 @@ public class GetDashboardStatsResponse {
             int inProgressTasks,
             int todoTasks,
             int overdueTasks,
-            double teamProgress,
-            double completionRate
+            int teamProgress,
+            int completionRate
     ) {
         return new GetDashboardStatsResponse(
                 totalTasks,

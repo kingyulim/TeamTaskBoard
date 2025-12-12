@@ -47,9 +47,9 @@ public class DashboardService {
         int myCompletedTasks = taskRepository.countCompletedByUser(userId);
 
         //팀 진행률(완료율)
-        double teamProgress = (totalTasks == 0) ? 0 : (completedTasks*100.0 /totalTasks);
+        int teamProgress = (int)(((totalTasks == 0) ? 0 : (completedTasks*100.0 /totalTasks)) + 0.5);
         // 내 진행률(완료율)
-        double completionRate = (myTotalTasks == 0) ? 0 : (myCompletedTasks*100.0 /myTotalTasks);
+        int completionRate = (int)(((myTotalTasks == 0) ? 0 : (myCompletedTasks*100.0 /myTotalTasks)) + 0.5);
 
         return GetDashboardStatsResponse.from(
                 totalTasks,

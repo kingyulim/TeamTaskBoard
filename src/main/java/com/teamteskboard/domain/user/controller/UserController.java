@@ -82,7 +82,6 @@ public class UserController {
      */
     @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
-        @AuthenticationPrincipal SecurityUser user,
         @PathVariable Long id
     ) {
         GetUserResponse result = userService.getUser(id);

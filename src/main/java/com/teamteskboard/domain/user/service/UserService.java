@@ -1,7 +1,6 @@
 package com.teamteskboard.domain.user.service;
 
 import com.teamteskboard.domain.user.enums.UserRoleEnum;
-import com.teamteskboard.common.regexp.RegExp;
 import com.teamteskboard.common.config.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
@@ -48,11 +47,6 @@ public class UserService {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
-        }
-
-        // 이메일 형식 체크
-        if (!request.getEmail().matches(RegExp.EMAIL)) {
-            throw new CustomException(ExceptionMessageEnum.PATTERN_VALIDATION_FAILED_EXCEPTION);
         }
 
         // User 생성
@@ -130,12 +124,7 @@ public class UserService {
     public List<GetUserResponse> getUserList() {
         List<User> user = userRepository.findAll();
 
-        List<GetUserResponse> getUserResponseList = user
-                .stream()
-                .map(u -> GetUserResponse.from(u))
-                .toList();
-
-        return getUserResponseList;
+        return user.stream().map(GetUserResponse::from).toList();
     }
 
     /**

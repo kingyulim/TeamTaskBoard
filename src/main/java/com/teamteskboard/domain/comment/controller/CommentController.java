@@ -87,7 +87,7 @@ public class CommentController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("댓글 목록을 조회했습니다.", commentService.getCommentPage(taskId, pageable)));
+                .body(ApiResponse.success("댓글 목록을 조회했습니다.", commentService.getCommentList(taskId, pageable)));
     }
 }
 

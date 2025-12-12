@@ -1,6 +1,6 @@
 package com.teamteskboard.common.exception;
 
-import com.teamteskboard.common.dto.response.ApiResponse;
+import com.teamteskboard.common.dto.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

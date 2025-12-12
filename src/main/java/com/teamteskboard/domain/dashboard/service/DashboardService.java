@@ -123,5 +123,4 @@ public class DashboardService {
             case SUNDAY -> "일";
         };
     }
-
 }

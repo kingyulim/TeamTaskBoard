@@ -25,5 +25,4 @@ public class CreateTaskRequest {
     private Long assigneeId;
 
     private LocalDateTime dueDate;
-
 }

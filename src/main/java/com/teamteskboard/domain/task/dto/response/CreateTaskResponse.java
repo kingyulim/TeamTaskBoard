@@ -9,17 +9,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class CreateTaskResponse {
     private Long id;
     private String title;
     private String description;
     private TaskPriorityEnum priority;
-
     private Long assigneeId;
     private AssigneeResponse assignee;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime dueDate;

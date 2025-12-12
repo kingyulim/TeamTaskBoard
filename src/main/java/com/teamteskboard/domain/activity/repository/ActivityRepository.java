@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
+
     @Query("""
         SELECT a FROM Activity a
         WHERE (:type IS NULL OR a.type = :type)
@@ -21,8 +22,13 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             AND (:startDate IS NULL OR a.createdAt >= :startDate)
             AND (:endDate IS NULL OR a.createdAt <= :endDate)
         """)
-    Page<Activity> findActivities(Pageable pageable, @Param("type") ActivityTypeEnum type, @Param("task") Task task,
-                                  @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    Page<Activity> findActivities(
+            Pageable pageable,
+            @Param("type") ActivityTypeEnum type,
+            @Param("task") Task task,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
 
     List<Activity> findAllByUser(User user);
 
@@ -34,9 +40,11 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
         AND a.createdAt BETWEEN :start AND :end
         AND a.task.isDeleted = false
     """)
-    int countCreatedTasksByDate(@Param("type") ActivityTypeEnum type,
-                                @Param("start") LocalDateTime start,
-                                @Param("end") LocalDateTime end);
+    int countCreatedTasksByDate(
+            @Param("type") ActivityTypeEnum type,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 
     // 특정 날짜에 완료된 작업 개수
     @Query("""
@@ -48,5 +56,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
         AND a.task.status = 'DONE'
         AND a.task.isDeleted = false
     """)
-    int countCompletedTasksByDate(@Param("type") ActivityTypeEnum type, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("doneKeyword") String doneKeyword);
+    int countCompletedTasksByDate(
+            @Param("type") ActivityTypeEnum type,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("doneKeyword") String doneKeyword
+    );
 }

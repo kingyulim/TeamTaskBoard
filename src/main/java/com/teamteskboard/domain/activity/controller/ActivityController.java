@@ -72,5 +72,4 @@ public class ActivityController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("내 활동 로그 조회 성공", result));
     }
-
 }

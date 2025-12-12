@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 
-
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -32,8 +32,6 @@ public class CommentService {
     // 생성
     @Transactional
     public CreatedCommentResponse save(Long taskId, Long userId, CreatedCommentRequest request) {
-
-
         //태스크 아이디 조회
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
@@ -59,9 +57,7 @@ public class CommentService {
         Comment save = commentRepository.save(comment);
 
         return  CreatedCommentResponse.from(save);
-
     }
-
 
     //수정
     @Transactional
@@ -78,9 +74,9 @@ public class CommentService {
         comment.commentUpdate(request.getContent());
 
         commentRepository.save(comment);
+
         return UpdateCommentResponse.from(comment);
     }
-
 
     //삭제
     @Transactional
@@ -101,6 +97,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Page<PageCommentResponse> getCommentPage(Long taskId, Pageable pageable) {
         Page<Comment> commentPage = commentRepository.findByTaskIdAndIsDeletedFalse(taskId, pageable);
+
         return commentPage.map(PageCommentResponse::from);
     }
 }

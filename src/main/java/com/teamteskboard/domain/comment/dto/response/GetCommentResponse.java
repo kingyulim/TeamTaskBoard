@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 
 public class GetCommentResponse {
 
-
     //댓글 조회 -> 대댓글 아님!
     private final Long id;
 
@@ -27,7 +26,6 @@ public class GetCommentResponse {
     private final Long parentId;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
-
 
     public static GetCommentResponse from(Comment comment) {
         User user = comment.getUser();

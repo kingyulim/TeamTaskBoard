@@ -9,10 +9,7 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    
-    
     Page<Comment> findByTaskIdAndIsDeletedFalse(Long taskId, Pageable pageable);
-
 
     Optional<Comment> findByIdAndTaskIdAndIsDeletedFalse(Long id, Long taskId);
 

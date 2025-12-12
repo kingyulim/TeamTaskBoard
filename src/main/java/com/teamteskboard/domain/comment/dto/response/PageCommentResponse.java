@@ -22,7 +22,6 @@ public class PageCommentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-
     public static PageCommentResponse from(Comment comment) {
         return new PageCommentResponse(
                 comment.getId(),

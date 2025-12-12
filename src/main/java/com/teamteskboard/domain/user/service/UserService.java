@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final UserTeamsRepository userTeamsRepository;
@@ -124,7 +125,10 @@ public class UserService {
     public List<GetUserResponse> getUserList() {
         List<User> user = userRepository.findAll();
 
-        return user.stream().map(GetUserResponse::from).toList();
+        return user
+                .stream()
+                .map(GetUserResponse::from)
+                .toList();
     }
 
     /**

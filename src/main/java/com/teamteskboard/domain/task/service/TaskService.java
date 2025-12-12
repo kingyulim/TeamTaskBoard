@@ -37,7 +37,6 @@ public class TaskService {
      */
     @Transactional
     public CreateTaskResponse saveTask(CreateTaskRequest request) {
-
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
 
@@ -63,11 +62,10 @@ public class TaskService {
      */
     @Transactional(readOnly = true)
     public GetTaskResponse getTask(Long taskId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
 
-        return GetTaskResponse.from(task);
+        return GetTaskResponse.fromDetail(task);
     }
 
     /**
@@ -100,7 +98,6 @@ public class TaskService {
      */
     @Transactional
     public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
 
@@ -129,7 +126,6 @@ public class TaskService {
      */
     @Transactional
     public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
 
@@ -158,7 +154,6 @@ public class TaskService {
      */
     @Transactional
     public void deleteTask(Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
 
@@ -168,6 +163,4 @@ public class TaskService {
 
         task.softDelete();
     }
-
-
 }

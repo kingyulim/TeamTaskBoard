@@ -19,8 +19,6 @@ public class UpdateCommentResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-
-
     public static UpdateCommentResponse from(Comment comment) {
         return new UpdateCommentResponse(
                 comment.getId(),

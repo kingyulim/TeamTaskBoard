@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ActivityTypeEnum {
+
     TASK_CREATED("saveTask", "작업 생성") {
         public String apply(String... str) {
             return String.format("새로운 작업 \"%s\"을 생성했습니다.", str[0]);

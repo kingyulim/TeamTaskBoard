@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class ReadActivityMeResponse {
+
     private final Long id;
     private final Long userId;
     private final ReadActivityUserResponse user;

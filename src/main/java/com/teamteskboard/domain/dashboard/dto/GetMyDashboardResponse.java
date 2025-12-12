@@ -14,7 +14,7 @@ import java.util.List;
 public class GetMyDashboardResponse {
 
     private final List<TaskSummary> todayTasks;
-    private final List<TaskSummary> upcommingTasks;
+    private final List<TaskSummary> upcomingTasks;
     private final List<TaskSummary> overdueTasks;
 
     @Getter
@@ -35,7 +35,6 @@ public class GetMyDashboardResponse {
                     task.getDueDate()
             );
         }
-
     }
 
     // 정적메서드 추가

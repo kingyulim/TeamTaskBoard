@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CreatedCommentResponse {
 
-
-    // @추가 하기
     private final Long id;
     private final Long taskId;
     private final Long userId;

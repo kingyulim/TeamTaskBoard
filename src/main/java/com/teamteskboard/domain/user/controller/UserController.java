@@ -3,12 +3,8 @@ package com.teamteskboard.domain.user.controller;
 import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.ApiResponse;
 import com.teamteskboard.domain.team.dto.response.TeamMemberResponse;
-import com.teamteskboard.domain.user.dto.request.CreateUserRequest;
-import com.teamteskboard.domain.user.dto.request.LoginRequest;
-import com.teamteskboard.domain.user.dto.request.PasswordRequest;
-import com.teamteskboard.domain.user.dto.request.UpdateUserRequest;
+import com.teamteskboard.domain.user.dto.request.*;
 import com.teamteskboard.domain.user.dto.response.*;
-import com.teamteskboard.user.dto.response.*;
 import com.teamteskboard.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
+
     private final UserService userService;
 
     /**
@@ -70,13 +67,15 @@ public class UserController {
     ) {
         PasswordResponse result = userService.verifyPassword(user.getId(), request);
 
-        if (result.isValid())
-            return ResponseEntity.status(HttpStatus.OK)
+        if (result.isValid()) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
                     .body(ApiResponse.success("비밀번호가 확인되었습니다.", result));
-        else
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("비밀번호가 올바르지 않습니다.", result));
+        }
 
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("비밀번호가 올바르지 않습니다.", result));
     }
 
     /**
@@ -86,7 +85,6 @@ public class UserController {
      */
     @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUser(
-        @AuthenticationPrincipal SecurityUser user,
         @PathVariable Long id
     ) {
         GetUserResponse result = userService.getUser(id);

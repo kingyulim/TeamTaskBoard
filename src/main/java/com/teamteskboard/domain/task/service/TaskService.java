@@ -1,9 +1,8 @@
 package com.teamteskboard.domain.task.service;
 
 import com.teamteskboard.common.exception.CustomException;
-import com.teamteskboard.domain.task.dto.request.CreateTaskRequest;
-import com.teamteskboard.domain.task.dto.request.UpdateTaskRequest;
-import com.teamteskboard.domain.task.dto.request.UpdateTaskStatusRequest;
+import com.teamteskboard.common.exception.ExceptionMessageEnum;
+import com.teamteskboard.domain.task.dto.request.*;
 import com.teamteskboard.domain.task.dto.response.CreateTaskResponse;
 import com.teamteskboard.domain.task.dto.response.GetTaskResponse;
 import com.teamteskboard.domain.task.dto.response.UpdateTaskResponse;
@@ -39,9 +38,8 @@ public class TaskService {
      */
     @Transactional
     public CreateTaskResponse saveTask(CreateTaskRequest request) {
-
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
-                .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
         // 마감일이 null이면 7일 후로 설정
         LocalDateTime dueDate = request.getDueDate();
@@ -65,11 +63,10 @@ public class TaskService {
      */
     @Transactional(readOnly = true)
     public GetTaskResponse getTask(Long taskId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
 
-        return GetTaskResponse.from(task);
+        return GetTaskResponse.fromDetail(task);
     }
 
     /**
@@ -102,17 +99,16 @@ public class TaskService {
      */
     @Transactional
     public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
 
         // 작업의 담당자와 로그인한 사용자가 같은지 확인
         if(!userId.equals(task.getAssignee().getId())) {
-            throw new CustomException(TASK_ACCESS_DENIED);
+            throw new CustomException(ExceptionMessageEnum.TASK_ACCESS_DENIED);
         }
 
         User updatedAssignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
-                .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
         task.update(request, updatedAssignee);
 
@@ -131,19 +127,18 @@ public class TaskService {
      */
     @Transactional
     public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
 
         if(!userId.equals(task.getAssignee().getId())) {
-            throw new CustomException(TASK_ACCESS_DENIED);
+            throw new CustomException(ExceptionMessageEnum.TASK_ACCESS_DENIED);
         }
 
         TaskStatusEnum status;
         try{
             status = TaskStatusEnum.valueOf(request.getStatus());
         } catch (IllegalArgumentException | NullPointerException e){
-            throw new CustomException(INVALID_TASK_STATUS);
+            throw new CustomException(ExceptionMessageEnum.INVALID_TASK_STATUS);
         }
 
         task.updateStatus(status);
@@ -160,16 +155,13 @@ public class TaskService {
      */
     @Transactional
     public void deleteTask(Long taskId, Long userId) {
-
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_TASK));
+                .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
 
         if(!userId.equals(task.getAssignee().getId())) {
-            throw new CustomException(TASK_ACCESS_DENIED);
+            throw new CustomException(ExceptionMessageEnum.TASK_ACCESS_DENIED);
         }
 
         task.softDelete();
     }
-
-
 }

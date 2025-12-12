@@ -11,9 +11,7 @@ public class GetDashboardStatsResponse {
     private final int completedTasks;// 완료 작업(done)
     private final int inProgressTasks;// 진행중(IN_PROGRESS)
     private final int todoTasks;//(TODO)
-
     private final int overdueTasks;// 기한 초과
-
     private final int teamProgress; //팀 진행률
     private final int completionRate;//내 진행률
 
@@ -37,5 +35,4 @@ public class GetDashboardStatsResponse {
                 completionRate
         );
     }
-
 }

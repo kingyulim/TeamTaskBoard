@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class CreateUserRequest {
+
     @NotBlank(message = "이름이 입력되지 않았습니다.")
     @Pattern(regexp = RegExp.NAME, message = "이름은 한글 또는 영문만 입력할 수 있습니다.")
     private String name;

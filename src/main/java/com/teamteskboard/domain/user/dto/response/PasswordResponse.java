@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class PasswordResponse {
+
     private final boolean valid;
 
     public static PasswordResponse from(boolean valid) {

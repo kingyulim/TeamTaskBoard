@@ -7,7 +7,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-//@NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCommentResponse {
 
@@ -18,8 +17,6 @@ public class UpdateCommentResponse {
     private final Long parentId;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
-
-
 
     public static UpdateCommentResponse from(Comment comment) {
         return new UpdateCommentResponse(

@@ -1,7 +1,6 @@
 package com.teamteskboard.domain.user.service;
 
 import com.teamteskboard.domain.user.enums.UserRoleEnum;
-import com.teamteskboard.common.regexp.RegExp;
 import com.teamteskboard.common.config.PasswordEncoder;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
@@ -11,12 +10,8 @@ import com.teamteskboard.common.entity.Team;
 import com.teamteskboard.common.entity.UserTeams;
 import com.teamteskboard.domain.team.repository.TeamRepository;
 import com.teamteskboard.domain.team.repository.UserTeamsRepository;
-import com.teamteskboard.domain.user.dto.request.CreateUserRequest;
-import com.teamteskboard.domain.user.dto.request.LoginRequest;
-import com.teamteskboard.domain.user.dto.request.PasswordRequest;
-import com.teamteskboard.domain.user.dto.request.UpdateUserRequest;
+import com.teamteskboard.domain.user.dto.request.*;
 import com.teamteskboard.domain.user.dto.response.*;
-import com.teamteskboard.user.dto.response.*;
 import com.teamteskboard.common.entity.User;
 import com.teamteskboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final UserTeamsRepository userTeamsRepository;
@@ -52,11 +48,6 @@ public class UserService {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ExceptionMessageEnum.USER_SAME_EMAIL);
-        }
-
-        // 이메일 형식 체크
-        if (!request.getEmail().matches(RegExp.EMAIL)) {
-            throw new CustomException(ExceptionMessageEnum.PATTERN_VALIDATION_FAILED_EXCEPTION);
         }
 
         // User 생성
@@ -134,12 +125,10 @@ public class UserService {
     public List<GetUserResponse> getUserList() {
         List<User> user = userRepository.findAll();
 
-        List<GetUserResponse> getUserResponseList = user
+        return user
                 .stream()
-                .map(u -> GetUserResponse.from(u))
+                .map(GetUserResponse::from)
                 .toList();
-
-        return getUserResponseList;
     }
 
     /**

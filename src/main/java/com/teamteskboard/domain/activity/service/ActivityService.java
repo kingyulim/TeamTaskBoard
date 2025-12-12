@@ -7,8 +7,6 @@ import com.teamteskboard.domain.activity.repository.ActivityRepository;
 import com.teamteskboard.domain.activity.enums.ActivityTypeEnum;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
-import com.teamteskboard.common.entity.Task;
-import com.teamteskboard.domain.task.repository.TaskRepository;
 import com.teamteskboard.common.entity.User;
 import com.teamteskboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +24,6 @@ import java.util.List;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
-    private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
     /**
@@ -40,15 +37,11 @@ public class ActivityService {
      */
     public Page<ReadActivityResponse> getActivities(
             ActivityTypeEnum type, Long taskId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        // 작업 조회 (taskId가 null이면, null)
-        Task task = taskId == null ? null : taskRepository.findById(taskId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
-
         LocalDateTime start = startDate == null ? null : startDate.atStartOfDay(); // 시간을 00:00:00으로 설정
         LocalDateTime end = endDate == null ? null : endDate.atTime(LocalTime.MAX); // 시간을 23:59:59로 설정
 
         // 활동 로그 조회
-        Page<Activity> activities = activityRepository.findActivities(pageable, type, task, start, end);
+        Page<Activity> activities = activityRepository.findActivities(pageable, type, taskId, start, end);
         return activities.map(ReadActivityResponse::from);
     }
 

@@ -1,7 +1,10 @@
 package com.teamteskboard.dashboard.service;
 
+import com.teamteskboard.activity.repository.ActivityRepository;
+import com.teamteskboard.common.enums.ActivityTypeEnum;
 import com.teamteskboard.dashboard.dto.response.GetDashboardStatsResponse;
 import com.teamteskboard.dashboard.dto.response.GetMyDashboardResponse;
+import com.teamteskboard.dashboard.dto.response.GetWeeklyDashboardResponse;
 import com.teamteskboard.task.entity.Task;
 import com.teamteskboard.task.repository.TaskRepository;
 import com.teamteskboard.user.repository.UserRepository;
@@ -10,6 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +26,7 @@ public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final ActivityRepository activityRepository;
 
     @Transactional(readOnly = true)
     public GetDashboardStatsResponse getDashboardStats(Long userId) {
@@ -65,6 +73,44 @@ public class DashboardService {
                 upcomingTasks,
                 overdueTasks
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetWeeklyDashboardResponse> getWeeklyDashboard() {
+
+        LocalDate now = LocalDate.now();
+
+        List<GetWeeklyDashboardResponse> result = new ArrayList<>();
+
+        for(int i = 6; i>=0; i--) {
+            LocalDate date = now.minusDays(i);
+
+            LocalDateTime start = date.atStartOfDay();  // 해당 날짜의 00:00:00부터
+            LocalDateTime end = date.atStartOfDay().plusDays(1); // 그 다음날 00:00:00
+
+            int tasks = activityRepository.countCreatedTasksByDate(ActivityTypeEnum.TASK_CREATED, start, end);
+            int completed = activityRepository.countCompletedTasksByDate(ActivityTypeEnum.TASK_STATUS_CHANGED, start, end, "에서 DONE"); //description : 작업 상태를 IN_PROGRESS에서 DONE으로 변경했습니다.
+
+            String dayName = convertDay(date.getDayOfWeek());
+
+            result.add(GetWeeklyDashboardResponse.from(dayName, tasks, completed, date.toString()));
+
+        }
+
+        return result;
+
+    }
+
+    private String convertDay(DayOfWeek day) {
+        return switch (day) {
+            case MONDAY -> "월";
+            case TUESDAY -> "화";
+            case WEDNESDAY -> "수";
+            case THURSDAY -> "목";
+            case FRIDAY -> "금";
+            case SATURDAY -> "토";
+            case SUNDAY -> "일";
+        };
     }
 
 }

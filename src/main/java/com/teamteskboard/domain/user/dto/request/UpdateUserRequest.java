@@ -1,6 +1,6 @@
 package com.teamteskboard.domain.user.dto.request;
 
-import com.teamteskboard.common.regexp.RegExp;
+import com.teamteskboard.common.constant.RegExp;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;

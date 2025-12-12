@@ -1,4 +1,4 @@
-package com.teamteskboard.common.regexp;
+package com.teamteskboard.common.constant;
 
 public class RegExp {
     public static final String NAME = "^[가-힣a-zA-Z]+$";

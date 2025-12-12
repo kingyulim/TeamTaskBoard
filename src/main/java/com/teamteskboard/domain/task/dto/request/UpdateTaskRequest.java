@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UpdateTaskRequest {
 
-    @NotBlank
+    @NotBlank(message = "제목은 공백일 수 없습니다.")
     private String title;
 
     private String description;
 
     private TaskPriorityEnum priority;
 
-    @NotNull
+    @NotNull(message = "담당자는 필수값입니다.")
     private Long assigneeId;
 
     private LocalDateTime dueDate;

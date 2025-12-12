@@ -32,7 +32,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    // 태스크 생성
+    /**
+     * 태스크 생성
+     * @param request 작업 생성 요청 DTO
+     * @return 생성 응답 DTO
+     */
     @Transactional
     public CreateTaskResponse saveTask(CreateTaskRequest request) {
 
@@ -54,7 +58,11 @@ public class TaskService {
     }
 
 
-    // 단건 조회
+    /**
+     * 단건 조회
+     * @param taskId 작업 id
+     * @return 작업 조회 응답
+     */
     @Transactional(readOnly = true)
     public GetTaskResponse getTask(Long taskId) {
 
@@ -64,7 +72,14 @@ public class TaskService {
         return GetTaskResponse.from(task);
     }
 
-    // 전체 조회
+    /**
+     * 전체 조회
+     * @param status 작업의 상태로 검색 가능
+     * @param search 검색어로 검색 가능
+     * @param assigneeId 작업자id 검색
+     * @param pageable 페이지, 사이즈로 검색 가능
+     * @return Page<GetTaskResponse>
+     */
     @Transactional(readOnly = true)
     public Page<GetTaskResponse> getAllTasks(
             TaskStatusEnum status,
@@ -78,7 +93,13 @@ public class TaskService {
     }
 
 
-    // 작업 수정
+    /**
+     * 작업 수정
+     * @param request 수정 요청 DTO
+     * @param taskId 수정할 작업 id
+     * @param userId 로그인한 아이디
+     * @return 수정 응답 DTO
+     */
     @Transactional
     public UpdateTaskResponse updateTask(UpdateTaskRequest request, Long taskId, Long userId) {
 
@@ -100,8 +121,14 @@ public class TaskService {
         return UpdateTaskResponse.from(updatedTask);
 
     }
-    
-    // 작업 상태 수정
+
+    /**
+     * 작업 상태 수정
+     * @param request 상태 수정 DTO
+     * @param taskId 수정할 작업 id
+     * @param userId 로그인 id
+     * @return 수정 응답 DTO
+     */
     @Transactional
     public UpdateTaskResponse updateTaskStatus (UpdateTaskStatusRequest request, Long taskId, Long userId) {
 
@@ -126,7 +153,11 @@ public class TaskService {
         return UpdateTaskResponse.from(updatedTask);
     }
 
-    //삭제(soft delete)
+    /**
+     * 삭제(soft delete)
+     * @param taskId 삭제할 작업 id
+     * @param userId 로그인 id
+     */
     @Transactional
     public void deleteTask(Long taskId, Long userId) {
 

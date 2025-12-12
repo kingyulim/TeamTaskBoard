@@ -23,6 +23,10 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
+    /**
+     * @param user 로그인 사용자
+     * @return 대시보드 통계
+     */
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<GetDashboardStatsResponse>> getDashboardStats(
             @AuthenticationPrincipal SecurityUser user) {
@@ -34,6 +38,10 @@ public class DashboardController {
                 .body(ApiResponse.success("대시보드 통계 조회 성공", response));
     }
 
+    /**
+     * @param user 로그인 사용자
+     * @return 대시보드 통계
+     */
     @GetMapping("/tasks")
     public ResponseEntity<ApiResponse<GetMyDashboardResponse>> getMyDashboard(
             @AuthenticationPrincipal SecurityUser user){
@@ -46,6 +54,9 @@ public class DashboardController {
 
     }
 
+    /**
+     * @return 주간 작업 추세
+     */
     @GetMapping("/weekly-trend")
     public ResponseEntity<ApiResponse<List<GetWeeklyDashboardResponse>>> getWeeklyTrend() {
 

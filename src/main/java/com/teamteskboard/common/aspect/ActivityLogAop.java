@@ -1,20 +1,20 @@
 package com.teamteskboard.common.aspect;
 
-import com.teamteskboard.activity.entity.Activity;
-import com.teamteskboard.activity.repository.ActivityRepository;
-import com.teamteskboard.comment.dto.response.CreatedCommentResponse;
-import com.teamteskboard.comment.dto.response.UpdateCommentResponse;
-import com.teamteskboard.comment.entity.Comment;
-import com.teamteskboard.comment.repository.CommentRepository;
-import com.teamteskboard.common.enums.ActivityTypeEnum;
+import com.teamteskboard.common.entity.Activity;
+import com.teamteskboard.domain.activity.repository.ActivityRepository;
+import com.teamteskboard.domain.comment.dto.response.CreatedCommentResponse;
+import com.teamteskboard.domain.comment.dto.response.UpdateCommentResponse;
+import com.teamteskboard.common.entity.Comment;
+import com.teamteskboard.domain.comment.repository.CommentRepository;
+import com.teamteskboard.domain.activity.enums.ActivityTypeEnum;
 import com.teamteskboard.common.exception.CustomException;
 import com.teamteskboard.common.exception.ExceptionMessageEnum;
-import com.teamteskboard.task.dto.response.CreateTaskResponse;
-import com.teamteskboard.task.dto.response.UpdateTaskResponse;
-import com.teamteskboard.task.entity.Task;
-import com.teamteskboard.task.repository.TaskRepository;
-import com.teamteskboard.user.entity.User;
-import com.teamteskboard.user.repository.UserRepository;
+import com.teamteskboard.domain.task.dto.response.CreateTaskResponse;
+import com.teamteskboard.domain.task.dto.response.UpdateTaskResponse;
+import com.teamteskboard.common.entity.Task;
+import com.teamteskboard.domain.task.repository.TaskRepository;
+import com.teamteskboard.common.entity.User;
+import com.teamteskboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -34,15 +34,15 @@ public class ActivityLogAop {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.saveTask(..)) ||" +
-            "execution(* com.teamteskboard.task.service.TaskService.updateTask(..)) ||" +
-            "execution(* com.teamteskboard.comment.service.CommentService.save(..)) ||" +
-            "execution(* com.teamteskboard.comment.service.CommentService.update(..)) ||" +
-            "execution(* com.teamteskboard.task.service.TaskService.updateTaskStatus(..))")
+    @Pointcut("execution(* com.teamteskboard.domain.task.service.TaskService.saveTask(..)) ||" +
+            "execution(* com.teamteskboard.domain.task.service.TaskService.updateTask(..)) ||" +
+            "execution(* com.teamteskboard.domain.comment.service.CommentService.save(..)) ||" +
+            "execution(* com.teamteskboard.domain.comment.service.CommentService.update(..)) ||" +
+            "execution(* com.teamteskboard.domain.task.service.TaskService.updateTaskStatus(..))")
     public void SaveAndUpdateMethods() {}
 
-    @Pointcut("execution(* com.teamteskboard.task.service.TaskService.deleteTask(..)) ||" +
-            "execution(* com.teamteskboard.comment.service.CommentService.Delete(..))")
+    @Pointcut("execution(* com.teamteskboard.domain.task.service.TaskService.deleteTask(..)) ||" +
+            "execution(* com.teamteskboard.domain.comment.service.CommentService.Delete(..))")
     public void DeleteMethods() {}
 
     @AfterReturning(pointcut = "SaveAndUpdateMethods()", returning = "result")
@@ -75,10 +75,10 @@ public class ActivityLogAop {
     private void save(Long taskId, Long userId, String methodName) {
         // 작업
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.TASK_NOT_FOUND));
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK));
         // 사용자
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NO_USER_ID));
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
         // 활동 타입
         ActivityTypeEnum type = ActivityTypeEnum.fromMethodName(methodName);

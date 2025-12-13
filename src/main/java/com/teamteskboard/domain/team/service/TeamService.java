@@ -106,16 +106,16 @@ public class TeamService {
      * 팀 정보 수정
      * @param teamId (Team Id)
      * @param request 수정할 정보 요청 DTO
-     * @param userId 권한 검증에 필요한 UserId
+     * @param loginUserId 권한 검증에 필요한 UserId
      * @return 수정된 정보 응답 DTO
      */
     @Transactional
-    public UpdatedTeamResponse updateTeam(Long teamId, UpdatedTeamRequest request, Long userId) {
+    public UpdatedTeamResponse updateTeam(Long teamId, UpdatedTeamRequest request, Long loginUserId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
         // 권한 검증 로직(멤버에 포함된 유저만 수정 가능)
-        boolean memberCheck = userTeamsRepository.existsByTeamIdAndUserId(teamId, userId);
+        boolean memberCheck = userTeamsRepository.existsByTeamIdAndUserId(teamId, loginUserId);
         if (!memberCheck) {
             throw new CustomException(ExceptionMessageEnum.FORBIDDEN_ACTION);
         }
@@ -237,9 +237,10 @@ public class TeamService {
      * 팀 멤버 삭제
      * @param teamId (Team Id)
      * @param userId (User Id)
+     * @param loginUserId 권한 검증을 위한 로그인 유저 ID값
      */
     @Transactional
-    public void removeTeamMember(Long teamId, Long userId, Long loginuserId) {
+    public void removeTeamMember(Long teamId, Long userId, Long loginUserId) {
 
         // 팀 존재 확인
         Team team = teamRepository.findById(teamId)
@@ -250,7 +251,7 @@ public class TeamService {
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
         // 제거 권한 검증(멤버에 포함된 유저만 삭제 가능)
-        boolean memberCheck = userTeamsRepository.existsByTeamIdAndUserId(teamId, loginuserId);
+        boolean memberCheck = userTeamsRepository.existsByTeamIdAndUserId(teamId, loginUserId);
         if (!memberCheck) {
             throw new CustomException(ExceptionMessageEnum.FORBIDDEN_ACTION);
         }

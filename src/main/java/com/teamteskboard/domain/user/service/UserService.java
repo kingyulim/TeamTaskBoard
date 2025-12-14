@@ -172,6 +172,9 @@ public class UserService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
+        // 회원 탈퇴 시 팀 탈퇴도 진행
+        userTeamsRepository.deleteByUser(user);
+
         user.userDelete(true);
     }
 

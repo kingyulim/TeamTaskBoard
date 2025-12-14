@@ -1,6 +1,7 @@
 package com.teamteskboard.domain.dashboard.dto;
 
 import com.teamteskboard.common.entity.Task;
+import com.teamteskboard.domain.task.dto.response.AssigneeResponse;
 import com.teamteskboard.domain.task.enums.TaskPriorityEnum;
 import com.teamteskboard.domain.task.enums.TaskStatusEnum;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class GetMyDashboardResponse {
     @AllArgsConstructor
     public static class TaskSummary {
         private final Long id;
+        private final AssigneeResponse assignee;
         private final String title;
         private final TaskStatusEnum status;
         private final TaskPriorityEnum priority;
@@ -29,6 +31,7 @@ public class GetMyDashboardResponse {
         public static TaskSummary from (Task task) {
             return new TaskSummary(
                     task.getId(),
+                    AssigneeResponse.from(task.getAssignee()),
                     task.getTitle(),
                     task.getStatus(),
                     task.getPriority(),

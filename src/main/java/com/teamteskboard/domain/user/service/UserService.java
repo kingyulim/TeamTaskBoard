@@ -183,7 +183,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
         // 회원정보 전체
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByIsDeletedFalse();
 
         // 내가 입력한 팀 정보 전체
         List<UserTeams> userTeams = userTeamsRepository.findAllByTeam(team);

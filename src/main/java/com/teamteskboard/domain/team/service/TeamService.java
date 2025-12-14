@@ -255,6 +255,12 @@ public class TeamService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
+        // 제거 권한 검증(멤버에 포함된 유저만 삭제 가능)
+        boolean memberCheck = userTeamsRepository.existsByTeamIdAndUserId(teamId, loginUserId);
+        if (!memberCheck) {
+            throw new CustomException(ExceptionMessageEnum.FORBIDDEN_ACTION);
+        }
+
         // 팀 멤버 존재 확인
         UserTeams userTeam = userTeamsRepository.findByTeamAndUser(team, user)
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_MEMBER_NOT_FOUND));

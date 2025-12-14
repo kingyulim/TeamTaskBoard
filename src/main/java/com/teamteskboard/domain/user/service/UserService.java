@@ -76,8 +76,11 @@ public class UserService {
         User user = userRepository.findByUserName(request.getUsername())
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
-        // 삭제된 계정인지, 비밀번호가 일치하는지 확인
-        if (user.getIsDeleted() || !passwordEncoder.matches(request.getPassword(), user.getPassword()))
+        if (user.getIsDeleted()) { // 삭제된 계정인지 확인
+            throw new CustomException(ExceptionMessageEnum.DEACTIVATED_ACCOUNT);
+        }
+        // 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS);
 
         // 토큰 생성

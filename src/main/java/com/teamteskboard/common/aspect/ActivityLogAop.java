@@ -41,34 +41,40 @@ public class ActivityLogAop {
             "execution(* com.teamteskboard.domain.task.service.TaskService.updateTaskStatus(..))")
     public void SaveAndUpdateMethods() {}
 
-    @Pointcut("execution(* com.teamteskboard.domain.task.service.TaskService.deleteTask(..)) ||" +
-            "execution(* com.teamteskboard.domain.comment.service.CommentService.Delete(..))")
-    public void DeleteMethods() {}
+    @Pointcut("execution(* com.teamteskboard.domain.task.service.TaskService.deleteTask(..))")
+    public void DeleteTaskMethods() {}
+
+    @Pointcut("execution(* com.teamteskboard.domain.comment.service.CommentService.Delete(..))")
+    public void DeleteCommentMethods() {}
 
     @AfterReturning(pointcut = "SaveAndUpdateMethods()", returning = "result")
     public void AfterSaveAndUpdate(JoinPoint joinPoint, Object result){
         Long taskId = extractTaskId(result); // 작업 Id
         Long userId = extractUserId(result); // 사용자 Id
         String methodName = joinPoint.getSignature().getName(); // 메서드 이름
+
         save(taskId, userId, methodName);
     }
 
-    @AfterReturning(pointcut = "DeleteMethods()")
-    public void AfterDelete(JoinPoint joinPoint){
+    @AfterReturning(pointcut = "DeleteTaskMethods()")
+    public void AfterDeleteTask(JoinPoint joinPoint){
         Object[] args = joinPoint.getArgs();
-        Long taskId = null;
-        Long userId = null;
+        Long taskId = (Long) args[0];
+        Long userId = (Long) args[1];
         String methodName = joinPoint.getSignature().getName();
 
-        if (methodName.equals("deleteTask")) {
-            taskId = (Long) args[0];
-            userId = (Long) args[1];
-        } else if (methodName.equals("Delete")) {
-            userId = (Long) args[0];
-            Comment comment = commentRepository.findById((Long) args[1])
-                    .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_COMMENT));
-            taskId = comment.getTask().getId();
-        }
+        save(taskId, userId, methodName);
+    }
+
+    @AfterReturning(pointcut = "DeleteCommentMethods()")
+    public void AfterDeleteComment(JoinPoint joinPoint){
+        Object[] args = joinPoint.getArgs();
+        Comment comment = commentRepository.findById((Long) args[1])
+                .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_COMMENT));
+        Long taskId = comment.getTask().getId();
+        Long userId = (Long) args[0];
+        String methodName = joinPoint.getSignature().getName();
+
         save(taskId, userId, methodName);
     }
 
@@ -84,8 +90,7 @@ public class ActivityLogAop {
         ActivityTypeEnum type = ActivityTypeEnum.fromMethodName(methodName);
 
         // 변경 내용
-        String other = methodName.equals("updateTaskStatus") ? task.getStatus().name() : "";
-        String description = type != null ? type.apply(task.getTitle(), other) : "";
+        String description = type != null ? type.apply(task.getTitle(), task.getStatus().name()) : "";
 
         // 활동 로그
         log.info("[{}] {}", type, description);
@@ -93,7 +98,7 @@ public class ActivityLogAop {
         activityRepository.save(activity); // 저장!
     }
 
-    private static Long extractTaskId(Object result) {
+    private Long extractTaskId(Object result) {
         if (result instanceof CreateTaskResponse dto) {
             return dto.getId();
         } else if (result instanceof UpdateTaskResponse dto) {
@@ -102,11 +107,12 @@ public class ActivityLogAop {
             return dto.getTaskId();
         } else if (result instanceof UpdateCommentResponse dto) {
             return dto.getTaskId();
+        } else {
+            throw new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK);
         }
-        return null;
     }
 
-    private static Long extractUserId(Object result) {
+    private Long extractUserId(Object result) {
         if (result instanceof CreateTaskResponse dto) {
             return dto.getAssigneeId();
         } else if (result instanceof UpdateTaskResponse dto) {
@@ -115,8 +121,9 @@ public class ActivityLogAop {
             return dto.getUserId();
         } else if (result instanceof UpdateCommentResponse dto) {
             return dto.getUserId();
+        } else {
+            throw new CustomException(ExceptionMessageEnum.NOT_FOUND_TASK);
         }
-        return null;
     }
 
 }

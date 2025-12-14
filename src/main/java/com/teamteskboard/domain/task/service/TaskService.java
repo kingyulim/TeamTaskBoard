@@ -18,10 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDateTime;
-
-import static com.teamteskboard.common.exception.ExceptionMessageEnum.*;
 
 @Service
 @RequiredArgsConstructor

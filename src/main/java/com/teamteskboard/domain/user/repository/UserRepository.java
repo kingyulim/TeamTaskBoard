@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserName(String userName);
 
-    Optional<User> findByEmail(String email);
-
     // 소프트딜리트 되지 않은 사용자 중에서 조회
     Optional<User> findByIdAndIsDeletedFalse(Long id);
 
@@ -25,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.name LIKE %:keyword% OR u.userName LIKE %:keyword%")
     List<User> findByKeyword(@Param("keyword") String keyword);
+
+    List<User> findAllByIsDeletedFalse();
 }

@@ -2,7 +2,6 @@ package com.teamteskboard.domain.activity.repository;
 
 import com.teamteskboard.common.entity.Activity;
 import com.teamteskboard.domain.activity.enums.ActivityTypeEnum;
-import com.teamteskboard.common.entity.Task;
 import com.teamteskboard.common.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,14 +17,14 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query("""
         SELECT a FROM Activity a
         WHERE (:type IS NULL OR a.type = :type)
-            AND (:task IS NULL OR a.task = :task)
+            AND (:taskId IS NULL OR a.task.id = :taskId)
             AND (:startDate IS NULL OR a.createdAt >= :startDate)
             AND (:endDate IS NULL OR a.createdAt <= :endDate)
         """)
     Page<Activity> findActivities(
             Pageable pageable,
             @Param("type") ActivityTypeEnum type,
-            @Param("task") Task task,
+            @Param("taskId") Long taskId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );

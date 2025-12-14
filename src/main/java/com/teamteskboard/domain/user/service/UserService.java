@@ -76,8 +76,11 @@ public class UserService {
         User user = userRepository.findByUserName(request.getUsername())
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS));
 
-        // 삭제된 계정인지, 비밀번호가 일치하는지 확인
-        if (user.getIsDeleted() || !passwordEncoder.matches(request.getPassword(), user.getPassword()))
+        if (user.getIsDeleted()) { // 삭제된 계정인지 확인
+            throw new CustomException(ExceptionMessageEnum.DEACTIVATED_ACCOUNT);
+        }
+        // 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new CustomException(ExceptionMessageEnum.INVALID_CREDENTIALS);
 
         // 토큰 생성
@@ -169,6 +172,9 @@ public class UserService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(()->new CustomException(ExceptionMessageEnum.NOT_FOUND_USER));
 
+        // 회원 탈퇴 시 팀 탈퇴도 진행
+        userTeamsRepository.deleteByUser(user);
+
         user.userDelete(true);
     }
 
@@ -183,7 +189,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ExceptionMessageEnum.TEAM_NOT_FOUND));
 
         // 회원정보 전체
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByIsDeletedFalse();
 
         // 내가 입력한 팀 정보 전체
         List<UserTeams> userTeams = userTeamsRepository.findAllByTeam(team);

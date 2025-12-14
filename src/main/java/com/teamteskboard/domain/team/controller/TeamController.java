@@ -1,5 +1,6 @@
 package com.teamteskboard.domain.team.controller;
 
+import com.teamteskboard.common.config.SecurityUser;
 import com.teamteskboard.common.dto.ApiResponse;
 import com.teamteskboard.domain.team.dto.request.*;
 import com.teamteskboard.domain.team.dto.response.*;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,11 +68,12 @@ public class TeamController {
     @PutMapping("/teams/{id}")
     public ResponseEntity<ApiResponse<UpdatedTeamResponse>> updateTeam(
             @PathVariable Long id,
-            @Valid @RequestBody UpdatedTeamRequest request
+            @Valid @RequestBody UpdatedTeamRequest request,
+            @AuthenticationPrincipal SecurityUser user
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(id, request)));
+                .body(ApiResponse.success("팀 정보가 수정되었습니다.", teamService.updateTeam(id, request, user.getId())));
     }
 
     /**
@@ -130,9 +133,10 @@ public class TeamController {
     @DeleteMapping("/teams/{teamId}/members/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeTeamMember(
             @PathVariable Long teamId,
-            @PathVariable Long userId
+            @PathVariable Long userId,
+            @AuthenticationPrincipal SecurityUser user
     ) {
-        teamService.removeTeamMember(teamId, userId);
+        teamService.removeTeamMember(teamId, userId, user.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

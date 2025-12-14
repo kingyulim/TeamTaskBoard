@@ -24,7 +24,8 @@ public enum ExceptionMessageEnum {
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "팀 멤버를 찾을 수 없습니다."),
     TEAM_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 팀에 속한 멤버입니다."),
     TEAM_DELETE_HAS_MEMBERS(HttpStatus.CONFLICT, "팀에 멤버가 존재하여 삭제할 수 없습니다."),
-    DEACTIVATED_ACCOUNT(HttpStatus.FORBIDDEN, "탈퇴한 회원입니다.");
+    DEACTIVATED_ACCOUNT(HttpStatus.FORBIDDEN, "탈퇴한 회원입니다."),
+    FORBIDDEN_ACTION(HttpStatus.FORBIDDEN, "권한이 없습니다.")
     ;
 
     private final HttpStatus status;

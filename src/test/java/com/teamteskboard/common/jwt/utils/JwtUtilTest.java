@@ -20,11 +20,8 @@ class JwtUtilTest {
     void setUp() {
         jwtUtil = new JwtUtil();
 
-        // 테스트용 secret key (Base64 인코딩된 256bit 키)
-        String testSecretKey = "c2VjdXJldGVzdGtleW15c2VjdXJldGVzdGtleW15c2VjdXJldGVzdGtleQ==";
-
         // Reflection을 이용해 @Value 주입 대체
-        ReflectionTestUtils.setField(jwtUtil, "secretKeyString", testSecretKey);
+        ReflectionTestUtils.setField(jwtUtil, "secretKeyString", SECRET_KEY);
 
         // @PostConstruct 수동 호출
         jwtUtil.init();

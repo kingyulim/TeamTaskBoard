@@ -31,7 +31,6 @@ public class CommentService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-
     /**
      * 댓글 생성 기능
      *
@@ -55,7 +54,7 @@ public class CommentService {
         //부모 아이디 조회 및 여부
         Long parentId = request.getParentId();
 
-        //parentId가 존재할 경우
+        //parentId가  (존재할 경우 대댓글)
         if (parentId != null) {
             Comment parent = commentRepository.findByIdAndIsDeletedFalse(parentId)
                     .orElseThrow(() -> new CustomException(ExceptionMessageEnum.NOT_FOUND_COMMENT));
@@ -109,13 +108,12 @@ public class CommentService {
                 );
 
         //삭제 권한 - 유저 아이디가 다른 경우
-        if (!comment.getUser().getId().equals(userId)) {
+        if (!comment.getUserId().equals(userId)) {
             throw new CustomException(ExceptionMessageEnum.COMMENT_ACCESS_DENIED_EXCEPTION);
         }
         //soft delete
         comment.getIsDelete();
     }
-
 
     /**
      * 댓글 조회, 페이징

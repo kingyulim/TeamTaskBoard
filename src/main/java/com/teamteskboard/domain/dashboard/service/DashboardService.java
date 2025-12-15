@@ -25,7 +25,6 @@ import java.util.List;
 public class DashboardService {
 
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
 
     /**

@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -24,8 +26,11 @@ import java.util.Optional;
 
 import static com.teamteskboard.domain.task.enums.TaskPriorityEnum.HIGH;
 import static com.teamteskboard.domain.user.enums.UserRoleEnum.ADMIN;
+import static jdk.internal.org.jline.reader.impl.LineReaderImpl.CompletionType.List;
+import static jdk.javadoc.internal.doclets.toolkit.util.DocPath.parent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
@@ -49,16 +54,26 @@ public class CommentServiceTest {
     @DisplayName("댓글 성공 - 태스크, 유저, 페런트 아이디가 일치 시 - 성공")
     void createComment_success() {
         //given
+        //댓글이 달릴 때 task Id
         Long taskId = 1L;
+        // 댓글 작성자 user Id
         Long userId = 1L;
+
+        //댓글 생성 요청 DTO (보통 content, parentId 등을 담음)
         CreatedCommentRequest request = new CreatedCommentRequest();
+
+        //테스트용 유저 객체 생성
+        // 이 유저가 실제 DB에 있다고 가정
         User testUser = new User("Lee", "Leee", "test22@test.com", "12345678", ADMIN);
+
+        //이 유저가 실제 DB에 있다고 가정
         Task testTask = new Task("테스트", "체스트", HIGH, testUser, LocalDateTime.now());
 
-
+        // 레포지토리.커리문에서 호출하면 testUser를 Optional로 감싸서 반환하도록 설정
         when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
 
-        when(taskRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testTask));
+        // 레포지토리.커리문에서 호출하면 testTake를 Optional로 감싸서 반환하도록 설정
+        when(taskRepository.findByIdAndIsDeletedFalse(taskId)).thenReturn(Optional.of(testTask));
 
         //savedComment 먼저 만들어야 함 (DB가 저장 후 돌려주는 역할)
         Comment savedComment = new Comment(testUser, testTask, "댓글 내용", null);
@@ -67,18 +82,23 @@ public class CommentServiceTest {
         when(commentRepository.save(any(Comment.class))).thenReturn(savedComment); //생성해야함
 
         //when
-
         CreatedCommentResponse result = commentService.save(taskId, userId, request);
 
         //then
+
+        //반환된 댓글 내용이 저장된 내용과 같은지 확인
         assertThat(result.getId()).isEqualTo(100L);
+
+        //반환된 댓글 내용이 저장된 내용과 같은지
         assertThat(result.getContent()).isEqualTo("댓글 내용");
+
+        //부모 댓글이 없는 일반 댓글이므로 parentId가 null인지 확인
         assertThat(result.getParentId()).isNull();
     }
 
     //수정
     @Test
-    @DisplayName("update: 댓글 수정")
+    @DisplayName("update: 댓글 수정 성공")
     void update() {
         //given
         Long taskId = 1L;
@@ -117,6 +137,4 @@ public class CommentServiceTest {
         ReflectionTestUtils.setField(task, "id", taskId);
         return task;
     }
-
-
 }
